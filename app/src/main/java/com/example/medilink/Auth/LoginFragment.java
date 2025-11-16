@@ -19,6 +19,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Objects;
 
+import static android.content.Context.MODE_PRIVATE;
+
 public class LoginFragment extends Fragment {
     private Button btnLogin;
     private EditText etUsername, etPassword;
@@ -30,7 +32,19 @@ public class LoginFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser != null) {
-            checkUserType(currentUser.getUid());
+            String cachedUserType = requireActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE)
+                    .getString("USER_TYPE", null);
+
+            if (cachedUserType != null) {
+                if("doctor".equals(cachedUserType)) {
+                    startActivity(new Intent(getActivity(), DoctorHomeScreen.class));
+                } else if("patient".equals(cachedUserType)) {
+                    startActivity(new Intent(getActivity(), HomeScreen.class));
+                }
+                requireActivity().finish();
+            } else {
+                checkUserType(currentUser.getUid());
+            }
         }
     }
 
@@ -60,8 +74,11 @@ public class LoginFragment extends Fragment {
 
             FirebaseUser currentUser = mAuth.getCurrentUser();
             if(currentUser != null && !currentUser.getEmail().equals(email)) {
-                // Sign out previous user if trying to login with a different account
                 mAuth.signOut();
+                requireActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE)
+                        .edit()
+                        .remove("USER_TYPE")
+                        .apply();
             }
 
             mAuth.signInWithEmailAndPassword(email, password)
@@ -87,6 +104,12 @@ public class LoginFragment extends Fragment {
                 .addOnSuccessListener(snapshot -> {
                     if(snapshot.exists()) {
                         String userType = snapshot.getString("userType");
+
+                        requireActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE)
+                                .edit()
+                                .putString("USER_TYPE", userType)
+                                .apply();
+
                         if("doctor".equals(userType)) {
                             startActivity(new Intent(getActivity(), DoctorHomeScreen.class));
                         } else if("patient".equals(userType)) {

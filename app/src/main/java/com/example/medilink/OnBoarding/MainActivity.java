@@ -26,9 +26,20 @@ public class MainActivity extends AppCompatActivity {
     ImageButton btnGetStarted;
     TextView tvGetStarted;
     private final Handler sliderHandler = new Handler(Looper.getMainLooper());
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        boolean isOnboardingDone = getSharedPreferences("AppPrefs", MODE_PRIVATE)
+                .getBoolean("IS_ONBOARDING_DONE", false);
+
+        if (isOnboardingDone) {
+            startActivity(new Intent(MainActivity.this, LoginSignUp.class));
+            finish();
+            return;
+        }
+
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -70,6 +81,11 @@ public class MainActivity extends AppCompatActivity {
 
         tvGetStarted.setOnClickListener(v -> {
             if(btnGetStarted.isSelected()) {
+                getSharedPreferences("AppPrefs", MODE_PRIVATE)
+                        .edit()
+                        .putBoolean("IS_ONBOARDING_DONE", true)
+                        .apply();
+
                 Intent intent = new Intent(MainActivity.this, LoginSignUp.class);
                 startActivity(intent);
                 finish();

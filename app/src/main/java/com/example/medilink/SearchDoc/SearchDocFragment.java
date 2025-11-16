@@ -22,7 +22,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -34,10 +33,7 @@ public class SearchDocFragment extends Fragment {
     RecyclerView rvGridAppointments, rvSchedule;
     MaterialCardView mcvAppointment;
     TextView tvPrice;
-
-    // MUST BE LIST<DoctorSchedule>
-    private List<DoctorSchedule> doctorSchedules = new ArrayList<>();
-
+    private final List<DoctorSchedule> doctorSchedules = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -53,7 +49,6 @@ public class SearchDocFragment extends Fragment {
         return v;
     }
 
-
     private void fetchDoctors() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -68,33 +63,33 @@ public class SearchDocFragment extends Fragment {
             for (DocumentSnapshot doc : querySnapshot) {
                 DoctorSchedule doctor = parseDoctor(doc);
                 doctor.setDocId(doc.getId());
-                doctorSchedules.add(doctor); // FIXED
-            }
 
-            updateSlotsBasedOnTime(doctorSchedules); // OPTIONAL BUT USEFUL
+                // Update slots based on current time
+                updateSlotsBasedOnTime(doctor);
+
+                doctorSchedules.add(doctor);
+            }
 
             setupUI(doctorSchedules);
         });
     }
 
+    private void updateSlotsBasedOnTime(DoctorSchedule doctor) {
+        List<DoctorSchedule.Slots> schedule = doctor.getSchedule();
+        if (schedule == null) return;
 
-    private void updateSlotsBasedOnTime(List<DoctorSchedule> schedules) {
-        LocalDateTime now = LocalDateTime.now();
-        LocalTime current = now.toLocalTime();
+        LocalTime currentTime = LocalTime.now();
 
-        for (DoctorSchedule doctor : schedules) {
-            for (DoctorSchedule.Slots slot : doctor.getSchedule()) {
+        for (DoctorSchedule.Slots slot : schedule) {
+            if (!slot.isAvailable && slot.bookedBy != null) {
                 LocalTime endTime = LocalTime.parse(slot.end);
-
-                // If booked slot time passed → reset
-                if (!slot.isAvailable && endTime.isBefore(current)) {
+                if (endTime.isBefore(currentTime)) {
                     slot.isAvailable = true;
                     slot.bookedBy = null;
                 }
             }
         }
     }
-
 
     private DoctorSchedule parseDoctor(DocumentSnapshot doc) {
         String name = doc.getString("name");
@@ -132,7 +127,6 @@ public class SearchDocFragment extends Fragment {
         return doctor;
     }
 
-
     private void setupUI(List<DoctorSchedule> doctorSchedules) {
 
         AppointmentAdaptor adaptor = new AppointmentAdaptor(getContext(), doctorSchedules, doctor -> {
@@ -152,7 +146,6 @@ public class SearchDocFragment extends Fragment {
 
         rvGridAppointments.setAdapter(adaptor);
     }
-
 
     private void showDoctorSlotsDialog(DoctorSchedule doctor, Day day) {
         String selectedDay = day.getName();
@@ -190,7 +183,6 @@ public class SearchDocFragment extends Fragment {
                 .show();
     }
 
-
     public List<Day> getNext7Days() {
         List<Day> list = new ArrayList<>();
         LocalDate today = LocalDate.now();
@@ -204,23 +196,52 @@ public class SearchDocFragment extends Fragment {
         return list;
     }
 
-
     private void bookSlotForUser(DoctorSchedule doctor, DoctorSchedule.Slots slot) {
-        slot.isAvailable = false;
-        slot.bookedBy = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String currentUserId = FirebaseAuth.getInstance().getUid();
+        if (currentUserId == null) return;
 
-        db.collection("doctors").document(doctor.getDocId())
-                .update("schedule", doctor.getSchedule())
-                .addOnSuccessListener(aVoid ->
-                        Toast.makeText(getContext(), "Slot booked: " + slot.start + " - " + slot.end, Toast.LENGTH_SHORT).show())
-                .addOnFailureListener(e -> {
-                    slot.isAvailable = true;   // rollback
-                    slot.bookedBy = null;
-                    Toast.makeText(getContext(), "Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+        db.collection("doctors").document(doctor.getDocId()).get()
+                .addOnSuccessListener(snapshot -> {
+                    if (!snapshot.exists()) {
+                        Toast.makeText(getContext(), "Doctor data not found", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    List<Map<String, Object>> scheduleRaw = (List<Map<String, Object>>) snapshot.get("schedule");
+                    if (scheduleRaw == null) {
+                        Toast.makeText(getContext(), "No schedule available", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    boolean slotFound = false;
+
+                    for (Map<String, Object> slotMap : scheduleRaw) {
+                        String day = (String) slotMap.get("day");
+                        String start = (String) slotMap.get("start");
+                        String end = (String) slotMap.get("end");
+
+                        if (day.equals(slot.day) && start.equals(slot.start) && end.equals(slot.end)) {
+                            slotMap.put("isAvailable", false);
+                            slotMap.put("bookedBy", currentUserId);
+                            slotFound = true;
+                            break;
+                        }
+                    }
+
+                    if (!slotFound) {
+                        Toast.makeText(getContext(), "Selected slot not found", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    db.collection("doctors").document(doctor.getDocId())
+                            .update("schedule", scheduleRaw)
+                            .addOnSuccessListener(aVoid -> Toast.makeText(getContext(),
+                                    "Slot booked: " + slot.start + " - " + slot.end, Toast.LENGTH_SHORT).show())
+                            .addOnFailureListener(e -> Toast.makeText(getContext(),
+                                    "Failed to book: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                })
+                .addOnFailureListener(e -> Toast.makeText(getContext(),
+                        "Failed to fetch schedule: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
-
 }
-
