@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".OnBoarding.MainActivity">
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPagerOnboard"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <View
+        android:id="@+id/bottomOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:background="@drawable/onboarding_bottom"
+        android:layout_marginHorizontal="35dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+    <ImageButton
+        android:id="@+id/btnGetStarted"
+        android:layout_width="45dp"
+        android:layout_height="50dp"
+        android:background="@drawable/circlegetstarted"
+        android:contentDescription="@string/tick"
+        android:src="@drawable/onboardingtick"
+        app:layout_constraintTop_toTopOf="@id/bottomOverlay"
+        app:layout_constraintBottom_toBottomOf="@id/bottomOverlay"
+        app:layout_constraintLeft_toLeftOf="@id/bottomOverlay"
+        android:layout_marginHorizontal="10dp"/>
+
+    <TextView
+        android:id="@+id/tvGetStarted"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/GetStarted"
+        app:layout_constraintTop_toTopOf="@id/bottomOverlay"
+        app:layout_constraintBottom_toBottomOf="@id/bottomOverlay"
+        app:layout_constraintLeft_toLeftOf="@id/btnGetStarted"
+        app:layout_constraintRight_toRightOf="@id/bottomOverlay"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:textSize="23sp"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

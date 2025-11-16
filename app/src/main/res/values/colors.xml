@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="outerRing">#B3ADB1BD</color>
+    <color name="midRing">#B3686B73</color>
+    <color name="Terms">#686B73</color>
+    <color name="innerFill">#000203</color>
+    <color name="Background">#D8DDEB</color>
+    <color name="Blue">#0044FF</color>
+    <color name="DarkBlue">#0F1322</color>
+    <color name="whiteshade">#EEEEEF</color>
+    <color name="whiteshadecard">#EFF3FF</color>
+    <color name="blacktext">#2A2A2C</color>
+    <color name="bluetext">#97C1FF</color>
+    <color name="ButtonPressed">#2B303C</color>
+    <color name="NavBar">#242B47</color>
+    <color name="NavButtons">#414654</color>
+    <color name="GridCard">#181C2B</color>
+    <color name="Online">#2B303C</color>
+    <color name="Grey">#424755</color>
+</resources>

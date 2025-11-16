@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "406720393248",
+    "project_id": "medicare-b832c",
+    "storage_bucket": "medicare-b832c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:406720393248:android:5bfbc9d214e56fad7ecc45",
+        "android_client_info": {
+          "package_name": "com.example.medilink"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCiaTk7xP9JMLY6G6zCTWiCYGx6VyxoPpc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
