@@ -44,7 +44,7 @@ public class HomeScreen extends AppCompatActivity {
             else if(item.getItemId() == R.id.nav_search) {
                 replace(new SearchDocFragment());
             }
-            else {
+            else if(item.getItemId() == R.id.nav_chat){
                 replace(new ChatFragment());
             }
             return true;

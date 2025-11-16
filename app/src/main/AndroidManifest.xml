@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MediLink">
         <activity
+            android:name=".Stats.StatsInput"
+            android:exported="false" />
+        <activity
             android:name=".Home.DoctorHomeScreen"
             android:exported="false" />
         <activity
