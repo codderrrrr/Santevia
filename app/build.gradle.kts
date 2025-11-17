@@ -7,13 +7,13 @@ android {
     namespace = "com.example.medilink"
     compileSdk = 36
 
+
     defaultConfig {
         applicationId = "com.example.medilink"
         minSdk = 29
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -37,6 +37,7 @@ dependencies {
     implementation(libs.appcompat)
     implementation("com.google.android.material:material:1.11.0")
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
     implementation("com.github.blackfizz:eazegraph:1.2.5l")
     implementation("com.nineoldandroids:library:2.4.0")
     implementation(libs.material)

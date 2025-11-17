@@ -33,7 +33,7 @@ public class ScheduleAdaptor extends RecyclerView.Adapter<ScheduleAdaptor.ViewHo
 
     public ScheduleAdaptor(List<Day> days, DoctorSchedule doctor, onScheduleClickListener listener) {
         this.days = days;
-        this.doctor = doctor; // store doctor
+        this.doctor = doctor;
         this.listener = listener;
     }
 

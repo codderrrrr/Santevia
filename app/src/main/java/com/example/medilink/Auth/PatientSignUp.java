@@ -111,7 +111,7 @@ public class PatientSignUp extends Fragment {
                     Map<String, Object> map = new HashMap<>();
                     map.put("userType", "patient");
 
-                    FirebaseFirestore.getInstance().collection("users")
+                    FirebaseFirestore.getInstance().collection("user")
                             .document(uid)
                             .set(map)
                             .addOnSuccessListener(unused -> {

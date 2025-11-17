@@ -1,6 +1,7 @@
 package com.example.medilink.SearchDoc;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -197,20 +198,24 @@ public class SearchDocFragment extends Fragment {
     }
 
     private void bookSlotForUser(DoctorSchedule doctor, DoctorSchedule.Slots slot) {
+        if (!isAdded()) return;
+
+        final Context context = requireContext(); // safe context
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String currentUserId = FirebaseAuth.getInstance().getUid();
         if (currentUserId == null) return;
 
         db.collection("doctors").document(doctor.getDocId()).get()
                 .addOnSuccessListener(snapshot -> {
+                    if (!isAdded()) return; // check again
                     if (!snapshot.exists()) {
-                        Toast.makeText(getContext(), "Doctor data not found", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Doctor data not found", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
                     List<Map<String, Object>> scheduleRaw = (List<Map<String, Object>>) snapshot.get("schedule");
                     if (scheduleRaw == null) {
-                        Toast.makeText(getContext(), "No schedule available", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "No schedule available", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
@@ -230,18 +235,29 @@ public class SearchDocFragment extends Fragment {
                     }
 
                     if (!slotFound) {
-                        Toast.makeText(getContext(), "Selected slot not found", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Selected slot not found", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
                     db.collection("doctors").document(doctor.getDocId())
                             .update("schedule", scheduleRaw)
-                            .addOnSuccessListener(aVoid -> Toast.makeText(getContext(),
-                                    "Slot booked: " + slot.start + " - " + slot.end, Toast.LENGTH_SHORT).show())
-                            .addOnFailureListener(e -> Toast.makeText(getContext(),
-                                    "Failed to book: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                            .addOnSuccessListener(aVoid -> {
+                                if (isAdded()) {
+                                    Toast.makeText(context, "Slot booked: " + slot.start + " - " + slot.end, Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                            .addOnFailureListener(e -> {
+                                if (isAdded()) {
+                                    Toast.makeText(context, "Failed to book: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
                 })
-                .addOnFailureListener(e -> Toast.makeText(getContext(),
-                        "Failed to fetch schedule: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> {
+                    if (isAdded()) {
+                        Toast.makeText(context, "Failed to fetch schedule: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
+
 }

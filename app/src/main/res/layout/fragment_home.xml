@@ -20,60 +20,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/mcvAppointment"
-        android:layout_width="330dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/tvHeader"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:backgroundTint="@color/bluetext"
-        android:visibility="gone"
-        android:layout_margin="16dp"
-        app:layout_constraintRight_toRightOf="parent">
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/clAppointment"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="16dp">
-
-            <TextView
-                android:id="@+id/tvPrice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="@id/clAppointment"
-                app:layout_constraintLeft_toLeftOf="@id/clAppointment"
-                android:textSize="40sp"
-                android:textStyle="bold"
-                android:textColor="@color/black"
-                android:text="@string/_300"/>
-            <TextView
-                android:id="@+id/tvPerSession"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/per_session"
-                android:textColor="@color/Grey"
-                app:layout_constraintLeft_toLeftOf="@id/clAppointment"
-                app:layout_constraintTop_toBottomOf="@+id/tvPrice"/>
-            <TextView
-                android:id="@+id/tvSchedule"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/schedule"
-                android:textColor="@color/black"
-                android:layout_marginTop="24dp"
-                app:layout_constraintLeft_toLeftOf="@id/clAppointment"
-                app:layout_constraintTop_toBottomOf="@+id/tvPerSession"/>
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvSchedule"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintTop_toBottomOf="@id/tvSchedule"
-                android:scrollbars="horizontal"/>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </com.google.android.material.card.MaterialCardView>
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvGridAppointments"
         android:layout_width="0dp"
@@ -82,7 +28,7 @@
         android:clipToPadding="false"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:spanCount="2"
-        app:layout_constraintTop_toBottomOf="@id/mcvAppointment"
+        app:layout_constraintTop_toBottomOf="@id/tvHeader"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>

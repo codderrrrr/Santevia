@@ -117,11 +117,32 @@ public class DoctorSignUp extends Fragment {
         doctorMap.put("PhoneNo", doctor.getPhone());
         doctorMap.put("experience", doctor.getExperience());
         doctorMap.put("hospital", doctor.getHospital());
-        doctorMap.put("schedule", doctor.getSchedule()); // Save slots only once
+        doctorMap.put("schedule", doctor.getSchedule());
 
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("doctors").document(uid)
                 .set(doctorMap)
-                .addOnSuccessListener(aVoid -> Toast.makeText(getContext(), "Doctor registered successfully", Toast.LENGTH_SHORT).show())
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(getContext(), "Doctor registered successfully", Toast.LENGTH_SHORT).show();
+
+                    // Add userType to user collection for login
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("userType", "doctor");
+
+                    db.collection("user").document(uid)
+                            .set(map)
+                            .addOnSuccessListener(unused -> {
+                                // Optionally redirect to login
+                                requireActivity().getSupportFragmentManager().beginTransaction()
+                                        .replace(R.id.FragmentContainer, new LoginFragment())
+                                        .commit();
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(getContext(), "Failed to save userType: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            });
+
+                })
                 .addOnFailureListener(e -> Toast.makeText(getContext(), "Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
+
 }

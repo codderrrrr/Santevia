@@ -1,28 +1,28 @@
 package com.example.medilink.ModelClass;
 
-public class users {
+public class user {
     String userId;
     String userType;
 
-    users() {}
-    users(String userId, String userType) {
+    user() {}
+    user(String userId, String userType) {
         this.userId = userId;
         this.userType = userType;
     }
 
-    void setUserId(String userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
-    void setUserType(String userType) {
+    public void setUserType(String userType) {
         this.userType = userType;
     }
 
-    String getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    String getUserType() {
+    public String getUserType() {
         return userType;
     }
 }

@@ -1,66 +1,77 @@
 package com.example.medilink.Doctors;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.fragment.app.Fragment;
+
+import com.example.medilink.AppCache;
+import com.example.medilink.ModelClass.DoctorSchedule;
 import com.example.medilink.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link DoctorProfileFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.List;
+
 public class DoctorProfileFragment extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public DoctorProfileFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment DoctorProfileFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static DoctorProfileFragment newInstance(String param1, String param2) {
-        DoctorProfileFragment fragment = new DoctorProfileFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
+    TextView tvName, tvPhoneNo, tvEducation, tvExperience, tvHospital, tvFees;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_doctor_profile, container, false);
+
+        View v = inflater.inflate(R.layout.fragment_doctor_profile, container, false);
+        init(v);
+
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            Toast.makeText(getContext(), "No logged-in user found", Toast.LENGTH_SHORT).show();
+            return v;
+        }
+
+        String doctorId = currentUser.getUid();
+
+        List<DoctorSchedule> doctors = AppCache.getInstance().getLoadedData() != null ?
+                AppCache.getInstance().getLoadedData().doctors : null;
+
+        if (doctors == null || doctors.isEmpty()) {
+            Toast.makeText(getContext(), "Doctors data not loaded yet", Toast.LENGTH_SHORT).show();
+            return v;
+        }
+
+        DoctorSchedule loggedInDoctor = null;
+
+        for (DoctorSchedule d : doctors) {
+            if (d.getDocId().equals(doctorId)) {
+                loggedInDoctor = d;
+                break;
+            }
+        }
+
+        if (loggedInDoctor != null) {
+            tvName.setText(loggedInDoctor.getName());
+            tvPhoneNo.setText(loggedInDoctor.getPhone());
+            tvEducation.setText(loggedInDoctor.getEducation());
+            tvExperience.setText(loggedInDoctor.getExperience());
+            tvHospital.setText(loggedInDoctor.getHospital());
+            tvFees.setText(String.valueOf(loggedInDoctor.getPrice()));
+        } else {
+            Toast.makeText(getContext(), "Logged-in doctor profile not found", Toast.LENGTH_SHORT).show();
+        }
+
+        return v;
+    }
+
+    private void init(View v) {
+        tvName = v.findViewById(R.id.tvName);
+        tvPhoneNo = v.findViewById(R.id.tvPhoneNo);
+        tvFees = v.findViewById(R.id.tvFees);
+        tvEducation = v.findViewById(R.id.tvEducation);
+        tvExperience = v.findViewById(R.id.tvExperience);
+        tvHospital = v.findViewById(R.id.tvHospital);
     }
 }

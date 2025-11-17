@@ -102,4 +102,6 @@
     <string name="manual_entry">Manual Entry</string>
     <string name="defualt_entry">Defualt Entry</string>
     <string name="enter">Enter</string>
+    <string name="patient_name">Patient Name</string>
+    <string name="gender">gender</string>
 </resources>
