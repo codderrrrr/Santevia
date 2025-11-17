@@ -59,7 +59,7 @@ public class AppointmentAdaptor extends RecyclerView.Adapter<AppointmentAdaptor.
         holder.tvName.setText(doctor.getName());
         holder.tvSpecialization.setText(doctor.getSpecialization());
         holder.tvEducation.setText(doctor.getEducation());
-        holder.tvHospital.setText(doctor.getHospital());
+        holder.tvHospital.setText(doctor.gethospital());
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {

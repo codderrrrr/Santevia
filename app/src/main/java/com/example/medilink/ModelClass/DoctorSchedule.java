@@ -42,17 +42,17 @@ public class DoctorSchedule {
     private String PhoneNo;
     private String education;
     private List<Slots> schedule;
-    private String Hospital;
+    private String hospital;
     int price;
     public DoctorSchedule() {}
 
-    public DoctorSchedule(String name, String specialization, String education, int price, String phoneNo, String experience, int imageResId, String Hospital) {
+    public DoctorSchedule(String name, String specialization, String education, int price, String phoneNo, String experience, int imageResId, String hospital) {
         this.name = name;
         this.specialization = specialization;
         this.experience = experience;
         this.PhoneNo = phoneNo;
         this.education = education;
-        this.Hospital = Hospital;
+        this.hospital = hospital;
         this.price = price;
         generateDefaultSchedule();
     }
@@ -88,7 +88,7 @@ public class DoctorSchedule {
     public List<Slots> getSchedule() {return schedule;}
     public String getEducation() { return education; }
     public String getName() { return name; }
-    public String getHospital() {return Hospital;}
+    public String gethospital() {return hospital;}
     public int getPrice() { return price;}
     public void setDocId(String docId) { this.docId = docId;}
 }

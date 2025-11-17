@@ -116,7 +116,7 @@ public class DoctorSignUp extends Fragment {
         doctorMap.put("price", doctor.getPrice());
         doctorMap.put("PhoneNo", doctor.getPhone());
         doctorMap.put("experience", doctor.getExperience());
-        doctorMap.put("hospital", doctor.getHospital());
+        doctorMap.put("hospital", doctor.gethospital());
         doctorMap.put("schedule", doctor.getSchedule());
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();

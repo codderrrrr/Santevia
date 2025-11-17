@@ -57,7 +57,7 @@ public class DoctorProfileFragment extends Fragment {
             tvPhoneNo.setText(loggedInDoctor.getPhone());
             tvEducation.setText(loggedInDoctor.getEducation());
             tvExperience.setText(loggedInDoctor.getExperience());
-            tvHospital.setText(loggedInDoctor.getHospital());
+            tvHospital.setText(loggedInDoctor.gethospital());
             tvFees.setText(String.valueOf(loggedInDoctor.getPrice()));
         } else {
             Toast.makeText(getContext(), "Logged-in doctor profile not found", Toast.LENGTH_SHORT).show();

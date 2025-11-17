@@ -55,7 +55,7 @@ public class BookingsAdaptor extends RecyclerView.Adapter<BookingsAdaptor.ViewHo
         DoctorSchedule doctor = list.get(position);
         holder.tvName.setText(doctor.getName() != null ? doctor.getName() : "Unknown");
         holder.tvSpecialization.setText(doctor.getSpecialization() != null ? doctor.getSpecialization() : "Unknown");
-        holder.tvHospital.setText(doctor.getHospital() != null ? doctor.getHospital() : "Unknown");
+        holder.tvHospital.setText(doctor.gethospital() != null ? doctor.gethospital() : "Unknown");
 
         if (doctor.getSchedule() != null && !doctor.getSchedule().isEmpty()) {
             DoctorSchedule.Slots slot = doctor.getSchedule().get(0);

@@ -62,7 +62,7 @@ public class HomeFragment extends Fragment {
                                 doctor.getPhone(),
                                 doctor.getExperience(),
                                 0,
-                                doctor.getHospital()
+                                doctor.gethospital()
                         );
 
                         List<DoctorSchedule.Slots> singleSlotList = new ArrayList<>();
