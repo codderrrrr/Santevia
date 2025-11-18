@@ -40,6 +40,7 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
     implementation("com.github.blackfizz:eazegraph:1.2.5l")
     implementation("com.nineoldandroids:library:2.4.0")
+    implementation("com.androidplot:androidplot-core:1.5.11")
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)

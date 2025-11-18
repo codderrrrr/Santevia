@@ -1,14 +1,22 @@
 package com.example.medilink.Stats;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import com.example.medilink.AppCache;
+import com.example.medilink.ModelClass.BloodPressure;
+import com.example.medilink.ModelClass.Pulse;
+import com.example.medilink.ModelClass.HeartRate;
 import com.example.medilink.R;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -16,123 +24,194 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.google.android.material.card.MaterialCardView;
-import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
+import com.google.firebase.auth.FirebaseUser;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 public class StatisticsFragment extends Fragment {
 
-    private MaterialCardView cardBloodPressure, cardPulse, cardHeartRate;
-    private LineChart lineChartStats;
-    private MaterialCardView cardStatInfo;
-    private FirebaseFirestore db;
-    private String currentUserId;
-    private String selectedStat = "Pulse";
+    private LineChart lineChart;
+    private MaterialCardView cardBP, cardPulse, cardHeartRate, cardStatInfo;
+    private TextView tvStatName, tvMax, tvMin, tvMedian, tvMode;
 
+    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_statistics, container, false);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_statistics, container, false);
 
-        cardBloodPressure = v.findViewById(R.id.cardBloodPressure);
-        cardPulse = v.findViewById(R.id.cardPulse);
-        cardHeartRate = v.findViewById(R.id.cardHeartRate);
-        lineChartStats = v.findViewById(R.id.lineChartStats);
-        cardStatInfo = v.findViewById(R.id.CardStatInfo);
+        lineChart = view.findViewById(R.id.lineChartStats);
+        cardBP = view.findViewById(R.id.cardBloodPressure);
+        cardPulse = view.findViewById(R.id.cardPulse);
+        cardHeartRate = view.findViewById(R.id.cardHeartRate);
+        cardStatInfo = view.findViewById(R.id.CardStatInfo);
 
-        db = FirebaseFirestore.getInstance();
-        currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        // Initialize TextViews inside the stat info card
+        tvStatName = view.findViewById(R.id.tvStatName);
+        tvMax = view.findViewById(R.id.tvMax);
+        tvMin = view.findViewById(R.id.tvMin);
+        tvMedian = view.findViewById(R.id.tvMedian);
+        tvMode = view.findViewById(R.id.tvMode);
 
         setupChart();
 
-        cardBloodPressure.setOnClickListener(view -> {
-            selectedStat = "BloodPressure";
-            cardStatInfo.setVisibility(View.VISIBLE);
-            loadLineChart();
-        });
+        // Default chart: Blood Pressure
+        loadData("BloodPressure");
 
-        cardPulse.setOnClickListener(view -> {
-            selectedStat = "Pulse";
-            cardStatInfo.setVisibility(View.VISIBLE);
-            loadLineChart();
-        });
+        // Switch datasets when cards clicked
+        cardBP.setOnClickListener(v -> loadData("BloodPressure"));
+        cardPulse.setOnClickListener(v -> loadData("Pulse"));
+        cardHeartRate.setOnClickListener(v -> loadData("HeartRate"));
 
-        cardHeartRate.setOnClickListener(view -> {
-            selectedStat = "HeartRate";
-            cardStatInfo.setVisibility(View.VISIBLE);
-            loadLineChart();
-        });
-
-        loadLineChart();
-        return v;
+        return view;
     }
 
     private void setupChart() {
-        lineChartStats.setDragEnabled(true);
-        lineChartStats.setScaleEnabled(true);
-        lineChartStats.setPinchZoom(true);
-        lineChartStats.getDescription().setEnabled(false);
+        lineChart.setDragEnabled(false);
+        lineChart.setScaleEnabled(false);
+        lineChart.setPinchZoom(false);
+        lineChart.getDescription().setEnabled(false);
+        lineChart.getLegend().setEnabled(false);
+        lineChart.setBackgroundColor(getResources().getColor(R.color.DarkBlue));
 
-        XAxis xAxis = lineChartStats.getXAxis();
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setTextColor(Color.BLACK);
+        XAxis xAxis = lineChart.getXAxis();
         xAxis.setDrawGridLines(false);
+        xAxis.setDrawAxisLine(false);
+        xAxis.setDrawLabels(false);
 
-        YAxis leftAxis = lineChartStats.getAxisLeft();
-        leftAxis.setTextColor(Color.BLACK);
-        leftAxis.setDrawGridLines(true);
+        YAxis leftAxis = lineChart.getAxisLeft();
+        leftAxis.setDrawGridLines(false);
+        leftAxis.setDrawAxisLine(false);
+        leftAxis.setDrawLabels(false);
 
-        lineChartStats.getAxisRight().setEnabled(false);
+        lineChart.getAxisRight().setEnabled(false);
     }
 
-    private void loadLineChart() {
-        db.collection(selectedStat)
-                .whereEqualTo("userId", currentUserId)
-                .orderBy("timestamp")
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    List<Entry> entries = new ArrayList<>();
-                    List<String> labels = new ArrayList<>();
+    private void loadData(String type) {
+        List<Entry> entries = new ArrayList<>();
+        List<Float> values = new ArrayList<>();
 
-                    int index = 0;
-                    for (DocumentSnapshot doc : queryDocumentSnapshots) {
-                        float value = ((Number) doc.get("value")).floatValue();
-                        entries.add(new Entry(index, value));
-                        Timestamp ts = doc.getTimestamp("timestamp");
-                        labels.add(ts != null ? ts.toDate().toString() : "");
-                        index++;
+        // Get current user ID from FirebaseAuth
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            Toast.makeText(getContext(), "User not logged in", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String currentUserId = currentUser.getUid();
+
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.YEAR, -1); // yearly data
+        long oneYearAgoMillis = cal.getTimeInMillis();
+
+        switch (type) {
+            case "BloodPressure":
+                List<BloodPressure> bpData = AppCache.getInstance().getLoadedData() != null ?
+                        AppCache.getInstance().getLoadedData().bloodPressures : new ArrayList<>();
+                for (BloodPressure bp : bpData) {
+                    if (bp.getUserId().equals(currentUserId) &&
+                            bp.getTimestamp().toDate().getTime() >= oneYearAgoMillis) {
+                        float value = bp.getValue();
+                        entries.add(new Entry(entries.size(), value));
+                        values.add(value);
                     }
+                }
+                break;
 
-                    LineDataSet dataSet = new LineDataSet(entries, selectedStat);
-                    dataSet.setColor(Color.parseColor("#FF6200EE"));
-                    dataSet.setCircleColor(Color.WHITE);
-                    dataSet.setLineWidth(2f);
-                    dataSet.setCircleRadius(3f);
-                    dataSet.setDrawValues(false);
-                    dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+            case "Pulse":
+                List<Pulse> pulseData = AppCache.getInstance().getLoadedData() != null ?
+                        AppCache.getInstance().getLoadedData().pulses : new ArrayList<>();
+                for (Pulse p : pulseData) {
+                    if (p.getUserId().equals(currentUserId) &&
+                            p.getTimestamp().toDate().getTime() >= oneYearAgoMillis) {
+                        float value = p.getValue();
+                        entries.add(new Entry(entries.size(), value));
+                        values.add(value);
+                    }
+                }
+                break;
 
-                    LineData lineData = new LineData(dataSet);
-                    lineChartStats.setData(lineData);
+            case "HeartRate":
+                List<HeartRate> hrData = AppCache.getInstance().getLoadedData() != null ?
+                        AppCache.getInstance().getLoadedData().heartRates : new ArrayList<>();
+                for (HeartRate hr : hrData) {
+                    if (hr.getUserId().equals(currentUserId) &&
+                            hr.getTimestamp().toDate().getTime() >= oneYearAgoMillis) {
+                        float value = hr.getValue();
+                        entries.add(new Entry(entries.size(), value));
+                        values.add(value);
+                    }
+                }
+                break;
+        }
 
-                    lineChartStats.getXAxis().setValueFormatter(new ValueFormatter() {
-                        @Override
-                        public String getFormattedValue(float value) {
-                            int i = (int) value;
-                            if (i >= 0 && i < labels.size()) return labels.get(i);
-                            else return "";
-                        }
-                    });
+        if (entries.isEmpty()) {
+            lineChart.clear();
+            cardStatInfo.setVisibility(View.GONE);
+            Toast.makeText(getContext(), "No data available for the last year", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-                    lineChartStats.invalidate();
-                });
+        LineDataSet dataSet = new LineDataSet(entries, type);
+        dataSet.setColor(Color.GREEN);
+        dataSet.setDrawCircles(false);
+        dataSet.setLineWidth(2f);
+        dataSet.setDrawValues(false);
+        dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        dataSet.setDrawFilled(true);
+        dataSet.setFillColor(Color.GREEN);
+        dataSet.setFillAlpha(80);
+
+        lineChart.setData(new LineData(dataSet));
+        lineChart.invalidate();
+
+        // Show stat summary
+        showStatSummary(type, values);
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void showStatSummary(String statName, List<Float> values) {
+        if (values.isEmpty()) {
+            cardStatInfo.setVisibility(View.GONE);
+            return;
+        }
+
+        Collections.sort(values);
+
+        // Max, Min
+        float max = Collections.max(values);
+        float min = Collections.min(values);
+
+        // Median
+        float median = values.size() % 2 == 1 ?
+                values.get(values.size() / 2) :
+                (values.get(values.size() / 2 - 1) + values.get(values.size() / 2)) / 2f;
+
+        // Mode
+        Map<Float, Integer> freq = new HashMap<>();
+        float mode = values.get(0);
+        int maxCount = 0;
+        for (Float v : values) {
+            int count = freq.getOrDefault(v, 0) + 1;
+            freq.put(v, count);
+            if (count > maxCount) {
+                maxCount = count;
+                mode = v;
+            }
+        }
+
+        // Display in TextViews
+        cardStatInfo.setVisibility(View.VISIBLE);
+        tvStatName.setText(statName);
+        tvMax.setText(max + "");
+        tvMin.setText(min + "");
+        tvMedian.setText("" + median);
+        tvMode.setText("" + mode);
     }
 }

@@ -24,7 +24,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,29 +58,7 @@ public class SearchDocFragment extends Fragment {
 
         List<DoctorSchedule> doctors = AppCache.getInstance().getLoadedData().doctors;
 
-        for(DoctorSchedule doctor: doctors) {
-            updateSlotBasedOnTime(doctor);
-        }
-
         setUpUi(doctors);
-    }
-
-    private void updateSlotBasedOnTime(DoctorSchedule doctors) {
-        List<DoctorSchedule.Slots> schedule = doctors.getSchedule();
-
-        if(schedule == null) { return;}
-
-        LocalTime currentTime = LocalTime.now();
-        for(DoctorSchedule.Slots slot : schedule) {
-            if(!slot.isAvailable && slot.bookedBy != null) {
-                LocalTime endTime = LocalTime.parse(slot.end);
-                if(endTime.isBefore(currentTime)) {
-                    slot.bookedBy = null;
-                    slot.isAvailable = true;
-                }
-            }
-        }
-
     }
 
     private void setUpUi(List<DoctorSchedule> doctorSchedules) {
@@ -140,7 +117,7 @@ public class SearchDocFragment extends Fragment {
         new AlertDialog.Builder(getContext())
                 .setTitle("Available Slots for " + selectedDay)
                 .setItems(availableSlot.toArray(new String[0]), (dialog, which) -> {
-                   String[] times = availableSlot.get(which).split(" - ");
+                   String[] times = availableSlot.get(which).split("-");
                    String start = times[0];
                    String end = times[1];
 

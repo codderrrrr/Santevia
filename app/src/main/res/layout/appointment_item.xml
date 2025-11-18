@@ -3,123 +3,131 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="200dp"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="6dp"
+    android:layout_height="wrap_content"
+    android:layout_margin="12dp"
+    app:cardCornerRadius="18dp"
+    app:cardElevation="8dp"
+    android:foreground="?attr/selectableItemBackground"
     android:backgroundTint="@color/GridCard">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cvGrid"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="12dp">
+        android:layout_height="wrap_content"
+        android:padding="16dp">
 
+        <!-- Profile Image -->
         <ImageView
             android:id="@+id/ivDoctor"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
             android:background="@drawable/bg_circle_gray"
-            android:contentDescription="@string/doctorimg"
-            app:layout_constraintTop_toTopOf="parent"
+            android:padding="6dp"
+            android:scaleType="centerCrop"
             android:src="@drawable/profile"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="12dp"/>
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
 
+        <!-- Doctor Name -->
         <TextView
             android:id="@+id/tvName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/doctor_name"
             android:textColor="@color/white"
-            android:textSize="18sp"
+            android:textSize="20sp"
             android:textStyle="bold"
             android:ellipsize="end"
             android:maxLines="1"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="14dp"
             app:layout_constraintStart_toEndOf="@id/ivDoctor"
             app:layout_constraintTop_toTopOf="@id/ivDoctor"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="@id/ivDoctor"/>
+            app:layout_constraintEnd_toStartOf="@id/tvBookedSlot"
+            app:layout_constraintHorizontal_bias="0"/>
 
+        <!-- Booked Slot -->
         <TextView
             android:id="@+id/tvBookedSlot"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/slot"
             android:textColor="@color/white"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textStyle="bold"
             android:ellipsize="end"
             android:maxLines="1"
-            android:layout_marginStart="12dp"
-            app:layout_constraintTop_toTopOf="@id/ivDoctor"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="@id/ivDoctor"/>
+            android:layout_marginStart="8dp"
+            app:layout_constraintTop_toTopOf="@id/tvName"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
+        <!-- Specialization -->
         <TextView
             android:id="@+id/tvSpecialization"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/specialization"
             android:textColor="@color/white"
-            android:textSize="18sp"
+            android:textSize="16sp"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:layout_marginTop="8dp"
             app:layout_constraintTop_toBottomOf="@id/ivDoctor"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
+        <!-- Hospital -->
         <TextView
             android:id="@+id/tvHospital"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/hospital_name"
             android:textColor="@color/white"
-            android:textSize="16sp"
-            android:layout_marginTop="8dp"
+            android:textSize="15sp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:layout_marginTop="4dp"
             app:layout_constraintTop_toBottomOf="@id/tvSpecialization"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
+        <!-- Cancel Button -->
         <Button
             android:id="@+id/btnCancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/tvHospital"
             android:backgroundTint="@color/Red"
-            android:text="@string/cancel"
-            android:layout_marginTop="16dp"
             android:textColor="@color/white"
-            android:textSize="16sp"
-            app:layout_constraintStart_toStartOf="parent"
-            />
+            android:textSize="15sp"
+            android:layout_marginTop="16dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            app:layout_constraintTop_toBottomOf="@id/tvHospital"
+            app:layout_constraintStart_toStartOf="parent"/>
 
+        <!-- Chat + Call Icons -->
         <LinearLayout
             android:id="@+id/actionButtonsLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            app:layout_constraintTop_toTopOf="@+id/btnCancel"
-            app:layout_constraintBottom_toBottomOf="@+id/btnCancel"
-            app:layout_constraintRight_toRightOf="@id/cvGrid">
+            android:layout_marginEnd="6dp"
+            app:layout_constraintTop_toTopOf="@id/btnCancel"
+            app:layout_constraintBottom_toBottomOf="@id/btnCancel"
+            app:layout_constraintEnd_toEndOf="parent">
 
             <ImageView
                 android:id="@+id/ivChat"
-                android:layout_width="17dp"
-                android:layout_height="17dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="16dp"
                 android:src="@drawable/chat"
-                android:contentDescription="@string/chaticon"
-                android:layout_marginEnd="12dp"
-                app:tint="@color/white" />
+                app:tint="@color/white"/>
 
             <ImageView
                 android:id="@+id/ivCall"
-                android:layout_width="18dp"
-                android:layout_height="18dp"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
                 android:src="@drawable/call"
-                android:contentDescription="@string/callicon"
-                app:tint="@color/white" />
+                app:tint="@color/white"/>
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

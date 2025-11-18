@@ -7,12 +7,13 @@
     android:background="@color/DarkBlue"
     tools:context=".Stats.StatisticsFragment">
 
+    <!-- Header -->
     <TextView
         android:id="@+id/tvHeaderStats"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/YourStatistics"
-        android:textColor="@color/white"
+        android:textColor="#FFFFFF"
         android:textSize="28sp"
         android:textStyle="bold"
         android:paddingStart="16dp"
@@ -29,7 +30,8 @@
         app:layout_constraintBottom_toBottomOf="@id/tvHeaderStats"
         app:layout_constraintEnd_toEndOf="parent"
         android:src="@drawable/add"
-        android:background="@color/Grey"/>
+        android:backgroundTint="#1B2735"
+        app:tint="#00BFFF"/>
 
     <!-- Stat Cards -->
     <LinearLayout
@@ -45,11 +47,12 @@
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardBloodPressure"
             android:layout_width="0dp"
-            android:layout_height="80dp"
+            android:layout_height="105dp"
             android:layout_weight="1"
-            android:layout_margin="12dp"
+            android:layout_margin="8dp"
             app:cardCornerRadius="16dp"
-            android:backgroundTint="@color/Grey">
+            android:backgroundTint="#1B2735"
+            app:cardElevation="6dp">
             <ImageView
                 android:layout_width="48dp"
                 android:layout_height="48dp"
@@ -60,11 +63,12 @@
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardPulse"
             android:layout_width="0dp"
-            android:layout_height="80dp"
+            android:layout_height="105dp"
             android:layout_weight="1"
-            android:layout_margin="12dp"
+            android:layout_margin="8dp"
             app:cardCornerRadius="16dp"
-            android:backgroundTint="@color/Grey">
+            android:backgroundTint="#1B2735"
+            app:cardElevation="6dp">
             <ImageView
                 android:layout_width="48dp"
                 android:layout_height="48dp"
@@ -75,11 +79,12 @@
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardHeartRate"
             android:layout_width="0dp"
-            android:layout_height="80dp"
+            android:layout_height="105dp"
             android:layout_weight="1"
-            android:layout_margin="12dp"
+            android:layout_margin="8dp"
             app:cardCornerRadius="16dp"
-            android:backgroundTint="@color/Grey">
+            android:backgroundTint="#1B2735"
+            app:cardElevation="6dp">
             <ImageView
                 android:layout_width="48dp"
                 android:layout_height="48dp"
@@ -90,33 +95,142 @@
     </LinearLayout>
 
     <!-- Scrollable LineChart -->
-    <HorizontalScrollView
-        android:id="@+id/hsvChart"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:fillViewport="true"
-        android:scrollbars="none"
-        app:layout_constraintTop_toBottomOf="@id/llStatsCards">
-
-        <com.github.mikephil.charting.charts.LineChart
-            android:id="@+id/lineChartStats"
-            android:layout_width="12000dp"
-            android:layout_height="match_parent"
-            android:padding="16dp"/>
-    </HorizontalScrollView>
-
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/CardStatInfo"
+    <ScrollView
+        android:id="@+id/svChart"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/hsvChart"
+        android:fillViewport="true"
+        android:scrollbars="vertical"
+        app:layout_constraintTop_toBottomOf="@id/llStatsCards"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:cardCornerRadius="16dp"
-        android:backgroundTint="@color/Grey"
-        app:strokeWidth="0dp"
-        android:visibility="gone"
-        />
+        android:clipToPadding="false">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/lineChartStats"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:background="@color/DarkBlue"/>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/CardStatInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="20dp"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="12dp"
+                android:backgroundTint="#1B2735"
+                android:padding="24dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginVertical="20dp">
+                    <TextView
+                        android:id="@+id/tvStatName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/blood_pressure"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/white"/>
+                    <TextView
+                        android:id="@+id/tvMax"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/_1"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        android:layout_marginTop="16dp"
+                        app:layout_constraintTop_toBottomOf="@id/tvStatName"
+                        android:textSize="72sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/Red"/>
+                    <TextView
+                        android:id="@+id/tvMaxHeader"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/maximum"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvMax"
+                        android:textColor="@color/white"/>
+                    <TextView
+                        android:id="@+id/tvMin"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/_1"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toLeftOf="@id/tvMode"
+                        android:layout_marginTop="16dp"
+                        app:layout_constraintTop_toBottomOf="@id/tvMaxHeader"
+                        android:textSize="56sp"
+                        android:textStyle="bold"
+                        android:textColor="#0BF40D"/>
+                    <TextView
+                        android:id="@+id/tvMinHeader"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/minimum"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toLeftOf="@id/tvModeHeader"
+                        app:layout_constraintTop_toBottomOf="@id/tvMin"
+                        android:textColor="@color/white"/>
+                    <TextView
+                        android:id="@+id/tvMode"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/_1"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintLeft_toRightOf="@id/tvMin"
+                        android:layout_marginTop="16dp"
+                        app:layout_constraintTop_toBottomOf="@id/tvMaxHeader"
+                        android:textSize="56sp"
+                        android:textStyle="bold"
+                        android:textColor="#0BF40D"/>
+                    <TextView
+                        android:id="@+id/tvModeHeader"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/mode"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintLeft_toRightOf="@id/tvMinHeader"
+                        app:layout_constraintTop_toBottomOf="@id/tvMin"
+                        android:textColor="@color/white"/>
+                    <TextView
+                        android:id="@+id/tvMedian"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/_1"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        android:layout_marginTop="16dp"
+                        app:layout_constraintTop_toBottomOf="@id/tvMinHeader"
+                        android:textSize="56sp"
+                        android:textStyle="bold"
+                        android:textColor="#0BF40D"/>
+                    <TextView
+                        android:id="@+id/tvMedianHeader"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/median"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvMedian"
+                        android:textColor="@color/white"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -9,6 +9,9 @@ import com.example.medilink.ModelClass.user;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -121,6 +124,7 @@ public class FireBaseDataLoader {
                         DoctorSchedule doc = d.toObject(DoctorSchedule.class);
                         if(doc!=null) {
                             doc.setDocId(d.getId());
+//                            cleanExpiredSlotsAndUpdateFirebase(doc);
                             data.doctors.add(doc);
                         }
                     }
@@ -129,5 +133,40 @@ public class FireBaseDataLoader {
                 })
                 .addOnFailureListener(callBack::onFailure);
     }
+
+    private void cleanExpiredSlotsAndUpdateFirebase(DoctorSchedule doctor) {
+        if (doctor.getSchedule() == null) return;
+
+        LocalDate todayDate = LocalDate.now();
+        String today = todayDate.format(DateTimeFormatter.ofPattern("EEEE"));
+        LocalTime now = LocalTime.now();
+
+        boolean updated = false;
+
+        for (DoctorSchedule.Slots slot : doctor.getSchedule()) {
+            if (!slot.isAvailable && slot.getBookedBy() != null) {
+                if (!slot.getDay().equalsIgnoreCase(today) || LocalTime.parse(slot.getEnd()).isBefore(now)) {
+                    slot.isAvailable = true;
+                    slot.bookedBy = null;
+                    updated = true;
+                }
+            }
+        }
+
+        // Update Firebase only if something changed
+        if (updated) {
+            FirebaseFirestore.getInstance()
+                    .collection("doctors")
+                    .document(doctor.getDocId())
+                    .update("schedule", doctor.getSchedule())
+                    .addOnSuccessListener(aVoid -> {
+                        // optional: log success
+                    })
+                    .addOnFailureListener(e -> {
+                        // optional: log failure
+                    });
+        }
+    }
+
 
 }
