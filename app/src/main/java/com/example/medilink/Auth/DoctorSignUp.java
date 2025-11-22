@@ -102,8 +102,6 @@ public class DoctorSignUp extends Fragment {
             if(!degree.isEmpty()) degrees.add(degree);
         }
 
-        // The DoctorSchedule object is used primarily to collect and structure data
-        // The last parameter (0) is a placeholder for imageResId as it's not used here.
         DoctorSchedule doctor = new DoctorSchedule(
                 name, specialization, String.join(", ", degrees),
                 Integer.parseInt(fees), phone, experience, 0, hospital
@@ -111,7 +109,6 @@ public class DoctorSignUp extends Fragment {
 
         String uid = mAuth.getCurrentUser().getUid();
 
-        // --- MAP FOR FIRESTORE (Schedule logic removed) ---
         Map<String, Object> doctorMap = new HashMap<>();
         doctorMap.put("name", doctor.getName());
         doctorMap.put("specialization", doctor.getSpecialization());
@@ -120,24 +117,19 @@ public class DoctorSignUp extends Fragment {
         doctorMap.put("PhoneNo", doctor.getPhone());
         doctorMap.put("experience", doctor.getExperience());
         doctorMap.put("hospital", doctor.gethospital());
-        // doctorMap.put("schedule", doctor.getSchedule()); <-- REMOVED THIS LINE
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        // The .set() method will automatically create the 'doctors' collection
-        // if it doesn't exist, and create the document with the user's UID.
         db.collection("doctors").document(uid)
                 .set(doctorMap)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(getContext(), "Doctor registered successfully", Toast.LENGTH_SHORT).show();
 
-                    // Add userType to user collection for login
                     Map<String, Object> map = new HashMap<>();
                     map.put("userType", "doctor");
 
                     db.collection("users").document(uid)
                             .set(map)
                             .addOnSuccessListener(unused -> {
-                                // Optionally redirect to login
                                 requireActivity().getSupportFragmentManager().beginTransaction()
                                         .replace(R.id.FragmentContainer, new LoginFragment())
                                         .commit();

@@ -26,7 +26,6 @@ public class FireBaseDataLoader {
         public List<Pulse> pulses = new ArrayList<>();
         public List<user> users = new ArrayList<>();
         public List<Patient> patients = new ArrayList<>();
-        // Note: The DoctorSchedule objects loaded here will NOT have the schedule list.
         public List<DoctorSchedule> doctors = new ArrayList<>();
         public List<BloodPressure> bloodPressures = new ArrayList<>();
     }
@@ -44,7 +43,6 @@ public class FireBaseDataLoader {
             }
         };
 
-        // --- HeartRate ---
         db.collection("HeartRate")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -59,7 +57,6 @@ public class FireBaseDataLoader {
                 })
                 .addOnFailureListener(callBack::onFailure);
 
-        // --- users ---
         db.collection("users")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -75,7 +72,6 @@ public class FireBaseDataLoader {
                 })
                 .addOnFailureListener(callBack::onFailure);
 
-        // --- BloodPressure ---
         db.collection("BloodPressure")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -90,7 +86,6 @@ public class FireBaseDataLoader {
                 })
                 .addOnFailureListener(callBack::onFailure);
 
-        // --- Pulse ---
         db.collection("Pulse")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -105,7 +100,6 @@ public class FireBaseDataLoader {
                 })
                 .addOnFailureListener(callBack::onFailure);
 
-        // --- Patients ---
         db.collection("Patients")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -120,7 +114,6 @@ public class FireBaseDataLoader {
                 })
                 .addOnFailureListener(callBack::onFailure);
 
-        // --- doctors ---
         db.collection("doctors")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {

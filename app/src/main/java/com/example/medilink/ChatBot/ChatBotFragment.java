@@ -42,7 +42,7 @@ public class ChatBotFragment extends Fragment {
     private ImageButton btnSend;
     private ScrollView scrollView;
 
-    private static final String GEMINI_API_KEY = "";
+    private static final String GEMINI_API_KEY = "AIzaSyCLlvBuGzPCJ8orFdGZ1Sno-0A0Lo5WlhY";
 
     private final OkHttpClient client = new OkHttpClient();
 

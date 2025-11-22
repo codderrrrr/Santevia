@@ -16,6 +16,7 @@ import com.example.medilink.BookedAppointment.ChatActivity;
 import com.example.medilink.ModelClass.Booking; // Use the new Booking model
 import com.example.medilink.R;
 import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -59,8 +60,12 @@ public class DoctorBookingAdaptor extends RecyclerView.Adapter<DoctorBookingAdap
         }
 
         holder.ivChat.setOnClickListener(v -> {
+            String senderID = FirebaseAuth.getInstance().getUid();
+            String receiverID = patientUID;
+
             Intent intent = new Intent(context, ChatActivity.class);
-            intent.putExtra("otherUserID", patientUID);
+            intent.putExtra("senderID", senderID);
+            intent.putExtra("receiverID", receiverID);
             context.startActivity(intent);
         });
     }

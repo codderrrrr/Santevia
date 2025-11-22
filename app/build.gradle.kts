@@ -44,6 +44,7 @@ dependencies {
     implementation("im.zego:express-video:3.22.0")
     implementation("com.github.ZEGOCLOUD:zego_uikit_prebuilt_call_android:+")
     implementation("com.google.firebase:firebase-database:20.3.0")
+    implementation("androidx.health.connect:connect-client:1.1.0-alpha04")
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)

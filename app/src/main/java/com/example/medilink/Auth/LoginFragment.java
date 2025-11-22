@@ -37,12 +37,11 @@ public class LoginFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
-        // Check if cached userType exists
         String cachedUserType = requireActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE)
                 .getString("USER_TYPE", null);
 
         if (currentUser != null && cachedUserType != null) {
-            navigateToHome(cachedUserType); // Directly navigate if cached
+            navigateToHome(cachedUserType);
         }
     }
 
@@ -72,7 +71,6 @@ public class LoginFragment extends Fragment {
                 return;
             }
 
-            // Sign in with FirebaseAuth
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
@@ -82,7 +80,7 @@ public class LoginFragment extends Fragment {
                             }
                         } else {
                             Toast.makeText(requireContext(),
-                                    "Login Failed: " + (task.getException() != null ? task.getException().getMessage() : "Unknown error"),
+                                    "Login Failed: " + Objects.requireNonNull(task.getException()).getMessage(),
                                     Toast.LENGTH_LONG).show();
                         }
                     });
@@ -117,7 +115,6 @@ public class LoginFragment extends Fragment {
 
     @SuppressLint("CommitPrefEdits")
     private void saveUserTypeAndNavigate(String userType) {
-        // Save in SharedPreferences for caching
         requireActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE)
                 .edit()
                 .putString("USER_TYPE", userType)

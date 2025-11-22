@@ -35,9 +35,9 @@ public class MainActivity extends AppCompatActivity {
                 .getBoolean("IS_ONBOARDING_DONE", false);
 
         if (isOnboardingDone) {
-            startActivity(new Intent(MainActivity.this, LoginSignUp.class));
+            Intent intent = new Intent(MainActivity.this, LoginSignUp.class);
+            startActivity(intent);
             finish();
-            return;
         }
 
         EdgeToEdge.enable(this);

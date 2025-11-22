@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -14,6 +15,7 @@ import com.example.medilink.ModelClass.DoctorSchedule;
 import com.example.medilink.R;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.permissionx.guolindev.PermissionX;
 
@@ -28,14 +30,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-
-// Import the new AppointmentSummary class
 import com.example.medilink.BookedAppointment.HomeFragment.AppointmentSummary;
 
 public class BookingsAdaptor extends RecyclerView.Adapter<BookingsAdaptor.ViewHolder> {
 
     private final Context context;
-    // Change list type to the new summary class
     private List<AppointmentSummary> list;
 
     public BookingsAdaptor(Context context, List<AppointmentSummary> list) {
@@ -51,6 +50,7 @@ public class BookingsAdaptor extends RecyclerView.Adapter<BookingsAdaptor.ViewHo
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvName, tvSpecialization, tvHospital, tvBookedSlot;
         ImageView ivCall, ivChat;
+        Button btnCancel;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -60,6 +60,7 @@ public class BookingsAdaptor extends RecyclerView.Adapter<BookingsAdaptor.ViewHo
             tvBookedSlot = itemView.findViewById(R.id.tvBookedSlot);
             ivCall = itemView.findViewById(R.id.ivCall);
             ivChat = itemView.findViewById(R.id.ivChat);
+            btnCancel = itemView.findViewById(R.id.btnCancel);
         }
     }
 
@@ -73,26 +74,49 @@ public class BookingsAdaptor extends RecyclerView.Adapter<BookingsAdaptor.ViewHo
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        // Get the summary object
         AppointmentSummary summary = list.get(position);
         DoctorSchedule doctor = summary.doctor;
         Timestamp appointmentTime = summary.booking.getAppointmentTime();
 
-        holder.tvName.setText(doctor.getName() != null ? doctor.getName() : "Unknown");
-        holder.tvSpecialization.setText(doctor.getSpecialization() != null ? doctor.getSpecialization() : "Unknown");
-        holder.tvHospital.setText(doctor.gethospital() != null ? doctor.gethospital() : "Unknown");
+        holder.tvName.setText(doctor.getName());
+        holder.tvSpecialization.setText(doctor.getSpecialization());
+        holder.tvHospital.setText(doctor.gethospital());
 
-        // Format the Timestamp for display
-        if (appointmentTime != null) {
-            Date date = appointmentTime.toDate();
-            // Example format: Monday, 25 Nov 09:30 AM
-            @SuppressLint("SimpleDateFormat")
-            SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMM hh:mm a", Locale.getDefault());
+        Date date = appointmentTime.toDate();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMM hh:mm a", Locale.getDefault());
+        holder.tvBookedSlot.setText(dateFormat.format(date));
 
-            holder.tvBookedSlot.setText(dateFormat.format(date));
-        } else {
-            holder.tvBookedSlot.setText("Time not available");
-        }
+        holder.btnCancel.setOnClickListener(v -> {
+            String userId = summary.booking.getBookedByUserId();
+            String doctorId = summary.booking.getDoctorId();
+
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+            db.collection("doctors").document(doctorId)
+                    .collection("bookings")
+                    .whereEqualTo("bookedByUserId", userId)
+                    .whereEqualTo("appointmentTime", appointmentTime)
+                    .get()
+                    .addOnSuccessListener(querySnapshot -> {
+                        if (!querySnapshot.isEmpty()) {
+                            DocumentSnapshot doc = querySnapshot.getDocuments().get(0);
+                            db.collection("doctors").document(doctorId)
+                                    .collection("bookings")
+                                    .document(doc.getId())
+                                    .delete()
+                                    .addOnSuccessListener(aVoid -> {
+                                        Toast.makeText(context, "Booking removed", Toast.LENGTH_SHORT).show();
+                                        list.remove(position);
+                                        notifyItemRemoved(position);
+                                        notifyItemRangeChanged(position, list.size());
+                                    })
+                                    .addOnFailureListener(e -> Toast.makeText(context, "Failed to remove: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                        } else {
+                            Toast.makeText(context, "Booking not found", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnFailureListener(e -> Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+        });
 
         holder.ivCall.setOnClickListener(v -> {
             PermissionX.init((FragmentActivity) context)
@@ -111,12 +135,13 @@ public class BookingsAdaptor extends RecyclerView.Adapter<BookingsAdaptor.ViewHo
         });
 
         holder.ivChat.setOnClickListener(v -> {
-            if (doctor.getDocId() != null && doctor.getName() != null) {
-                Intent intent = new Intent(context, ChatActivity.class); // Assume ChatActivity path
-                intent.putExtra("otherUserID", doctor.getDocId());
-                intent.putExtra("otherUserName", doctor.getName());
-                context.startActivity(intent);
-            }
+            String senderID = FirebaseAuth.getInstance().getUid();
+            String receiverID = doctor.getDocId();
+
+            Intent intent = new Intent(context, ChatActivity.class);
+            intent.putExtra("senderID", senderID);
+            intent.putExtra("receiverID", receiverID);
+            context.startActivity(intent);
         });
     }
 
@@ -126,7 +151,6 @@ public class BookingsAdaptor extends RecyclerView.Adapter<BookingsAdaptor.ViewHo
 
         String roomID = docID + "_" + patientUID;
 
-        // Notify the doctor about the incoming call
         FirebaseFirestore.getInstance().collection("Calls")
                 .document(docID)
                 .set(new HashMap<String, Object>() {{
@@ -134,8 +158,7 @@ public class BookingsAdaptor extends RecyclerView.Adapter<BookingsAdaptor.ViewHo
                     put("timestamp", System.currentTimeMillis());
                 }});
 
-        // Start the call for the patient
-        Intent intent = new Intent(context, VideoCall.class); // Assume VideoCall path
+        Intent intent = new Intent(context, VideoCall.class);
         intent.putExtra("roomID", roomID);
         intent.putExtra("otherUserID", docID);
         context.startActivity(intent);
