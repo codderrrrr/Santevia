@@ -1,27 +1,36 @@
 package com.example.medilink.Doctors;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.medilink.ModelClass.DoctorSchedule;
+import com.example.medilink.BookedAppointment.ChatActivity;
+import com.example.medilink.ModelClass.Booking; // Use the new Booking model
 import com.example.medilink.R;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.Timestamp;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class DoctorBookingAdaptor extends RecyclerView.Adapter<DoctorBookingAdaptor.ViewHolder> {
 
     private final Context context;
-    private final List<DoctorSchedule.Slots> slotList;
+    // Changed list type to the new Booking model
+    private final List<Booking> bookingList;
 
-    public DoctorBookingAdaptor(Context context, List<DoctorSchedule.Slots> slotList) {
+    public DoctorBookingAdaptor(Context context, List<Booking> bookingList) {
         this.context = context;
-        this.slotList = slotList;
+        this.bookingList = bookingList;
     }
 
     @NonNull
@@ -31,47 +40,44 @@ public class DoctorBookingAdaptor extends RecyclerView.Adapter<DoctorBookingAdap
         return new ViewHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        DoctorSchedule.Slots slot = slotList.get(position);
+        Booking booking = bookingList.get(position);
+        String patientUID = booking.getBookedByUserId();
+        Timestamp appointmentTimestamp = booking.getAppointmentTime();
 
-        holder.tvBookedSlot.setText(slot.getDay() + " • " + slot.getStart() + " - " + slot.getEnd());
+        if (appointmentTimestamp != null) {
+            Date date = appointmentTimestamp.toDate();
+            // Format the Timestamp to display the appointment time and date
+            @SuppressLint("SimpleDateFormat")
+            SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMM | hh:mm a", Locale.getDefault());
 
-        FirebaseFirestore.getInstance().collection("Patients")
-                .document(slot.getBookedBy())
-                .get()
-                .addOnSuccessListener(snapshot -> {
-                    if (snapshot.exists()) {
-                        String name = snapshot.getString("name");
-                        String gender = snapshot.getString("gender");
-                        String age = snapshot.getString("age");
-                        String phone = snapshot.getString("phoneNo");
+            holder.tvBookedSlot.setText(dateFormat.format(date));
+        } else {
+            holder.tvBookedSlot.setText("Time Unknown");
+        }
 
-                        holder.tvName.setText(name != null ? name : "Unknown");
-                        holder.tvGender.setText(gender != null ? gender : "N/A");
-                        holder.tvAge.setText(age);
-                        holder.tvPhoneNo.setText(phone != null ? phone : "N/A");
-                    }
-                })
-                .addOnFailureListener(e -> holder.tvName.setText("Error loading"));
+        holder.ivChat.setOnClickListener(v -> {
+            Intent intent = new Intent(context, ChatActivity.class);
+            intent.putExtra("otherUserID", patientUID);
+            context.startActivity(intent);
+        });
     }
-
 
     @Override
     public int getItemCount() {
-        return slotList.size();
+        return bookingList.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvName, tvBookedSlot, tvGender, tvAge, tvPhoneNo;
+        TextView tvBookedSlot;
+        ImageView ivChat;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvName = itemView.findViewById(R.id.tvName);
-            tvAge = itemView.findViewById(R.id.tvAge);
-            tvGender = itemView.findViewById(R.id.tvGender);
             tvBookedSlot = itemView.findViewById(R.id.tvBookedSlot);
-            tvPhoneNo = itemView.findViewById(R.id.tvPhoneNo); // Make sure your layout has tvPrice
+            ivChat = itemView.findViewById(R.id.ivChat);
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.example.medilink.Chats;
+package com.example.medilink.ChatBot;
 
 import android.os.Bundle;
 import android.text.Spannable;
@@ -35,7 +35,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class ChatFragment extends Fragment {
+public class ChatBotFragment extends Fragment {
 
     private TextView tvResponse;
     private EditText etMessage;
@@ -53,7 +53,7 @@ public class ChatFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_chat, container, false);
+        View v = inflater.inflate(R.layout.fragment_chatbot, container, false);
 
         init(v);
 
@@ -115,8 +115,6 @@ public class ChatFragment extends Fragment {
         );
 
         tvResponse.setText(chatHistory);
-
-        // Scroll to bottom
         scrollView.post(() -> scrollView.fullScroll(View.FOCUS_DOWN));
     }
 

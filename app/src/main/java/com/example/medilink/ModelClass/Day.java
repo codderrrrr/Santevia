@@ -1,6 +1,7 @@
 package com.example.medilink.ModelClass;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 public class Day {
     private final LocalDate date;

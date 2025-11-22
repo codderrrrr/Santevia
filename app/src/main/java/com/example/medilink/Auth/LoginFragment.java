@@ -12,15 +12,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.medilink.AppCache;
 import com.example.medilink.Home.DoctorHomeScreen;
 import com.example.medilink.Home.HomeScreen;
-import com.example.medilink.ModelClass.user;
 import com.example.medilink.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.List;
+import java.util.Objects;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -29,6 +29,7 @@ public class LoginFragment extends Fragment {
     private Button btnLogin;
     private EditText etUsername, etPassword;
     private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
 
     @Override
     public void onStart() {
@@ -36,13 +37,12 @@ public class LoginFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
-        if (currentUser != null) {
-            String cachedUserType = requireActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE)
-                    .getString("USER_TYPE", null);
+        // Check if cached userType exists
+        String cachedUserType = requireActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE)
+                .getString("USER_TYPE", null);
 
-            if (cachedUserType != null) {
-                navigateToHome(cachedUserType);
-            }
+        if (currentUser != null && cachedUserType != null) {
+            navigateToHome(cachedUserType); // Directly navigate if cached
         }
     }
 
@@ -57,6 +57,7 @@ public class LoginFragment extends Fragment {
         btnLogin = v.findViewById(R.id.btnLogin);
 
         mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
         btnLogin.setOnClickListener(view -> {
             String email = etUsername.getText().toString().trim();
@@ -71,51 +72,52 @@ public class LoginFragment extends Fragment {
                 return;
             }
 
-            FirebaseUser currentUser = mAuth.getCurrentUser();
-            if (currentUser != null && !currentUser.getEmail().equals(email)) {
-                mAuth.signOut();
-                requireActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE)
-                        .edit()
-                        .remove("USER_TYPE")
-                        .apply();
-            }
-
-            // Firebase login
+            // Sign in with FirebaseAuth
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             FirebaseUser user = mAuth.getCurrentUser();
                             if (user != null) {
-                                lookupUserInCache(user.getUid());
+                                lookupUserInFirestore(user.getUid());
                             }
                         } else {
                             Toast.makeText(requireContext(),
                                     "Login Failed: " + (task.getException() != null ? task.getException().getMessage() : "Unknown error"),
                                     Toast.LENGTH_LONG).show();
                         }
-                    })
-                    .addOnFailureListener(e -> Toast.makeText(requireContext(), "Sign-in error: " + e.getMessage(),
-                            Toast.LENGTH_LONG).show());
+                    });
         });
 
         return v;
     }
 
-    private void lookupUserInCache(String uid) {
-        List<user> users = AppCache.getInstance().getLoadedData() != null ?
-                AppCache.getInstance().getLoadedData().users : null;
-
-        if (users != null) {
-            for (user u : users) {
-                if (uid.equals(u.getUserId())) {
-                    saveUserTypeAndNavigate(u.getUserType());
-                }
-            }
-        }
+    private void lookupUserInFirestore(String uid) {
+        db.collection("users").document(uid).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists() && document.contains("userType")) {
+                            String userType = document.getString("userType");
+                            if (userType != null) {
+                                saveUserTypeAndNavigate(userType);
+                            } else {
+                                Toast.makeText(requireContext(), "User type not set in Firestore.", Toast.LENGTH_LONG).show();
+                                mAuth.signOut();
+                            }
+                        } else {
+                            Toast.makeText(requireContext(), "User profile missing in Firestore.", Toast.LENGTH_LONG).show();
+                            mAuth.signOut();
+                        }
+                    } else {
+                        Toast.makeText(requireContext(), "Error fetching user data: " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_LONG).show();
+                        mAuth.signOut();
+                    }
+                });
     }
 
     @SuppressLint("CommitPrefEdits")
     private void saveUserTypeAndNavigate(String userType) {
+        // Save in SharedPreferences for caching
         requireActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE)
                 .edit()
                 .putString("USER_TYPE", userType)

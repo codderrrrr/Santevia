@@ -10,7 +10,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.medilink.BookedAppointment.HomeFragment;
-import com.example.medilink.Chats.ChatFragment;
+import com.example.medilink.ChatBot.ChatBotFragment;
 import com.example.medilink.R;
 import com.example.medilink.SearchDoc.SearchDocFragment;
 import com.example.medilink.Stats.StatisticsFragment;
@@ -45,7 +45,7 @@ public class HomeScreen extends AppCompatActivity {
                 replace(new SearchDocFragment());
             }
             else if(item.getItemId() == R.id.nav_chat){
-                replace(new ChatFragment());
+                replace(new ChatBotFragment());
             }
             return true;
         });

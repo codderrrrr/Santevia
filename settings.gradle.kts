@@ -18,9 +18,10 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven("https://jitpack.io")
+        maven("https://maven.zego.im")
+        maven("https://storage.zego.im/maven")
     }
 }
 
 rootProject.name = "MediLink"
 include(":app")
- 

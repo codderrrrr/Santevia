@@ -9,9 +9,6 @@ import com.example.medilink.ModelClass.user;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -29,6 +26,7 @@ public class FireBaseDataLoader {
         public List<Pulse> pulses = new ArrayList<>();
         public List<user> users = new ArrayList<>();
         public List<Patient> patients = new ArrayList<>();
+        // Note: The DoctorSchedule objects loaded here will NOT have the schedule list.
         public List<DoctorSchedule> doctors = new ArrayList<>();
         public List<BloodPressure> bloodPressures = new ArrayList<>();
     }
@@ -46,6 +44,7 @@ public class FireBaseDataLoader {
             }
         };
 
+        // --- HeartRate ---
         db.collection("HeartRate")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -60,6 +59,7 @@ public class FireBaseDataLoader {
                 })
                 .addOnFailureListener(callBack::onFailure);
 
+        // --- users ---
         db.collection("users")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -75,6 +75,7 @@ public class FireBaseDataLoader {
                 })
                 .addOnFailureListener(callBack::onFailure);
 
+        // --- BloodPressure ---
         db.collection("BloodPressure")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -89,6 +90,7 @@ public class FireBaseDataLoader {
                 })
                 .addOnFailureListener(callBack::onFailure);
 
+        // --- Pulse ---
         db.collection("Pulse")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -103,6 +105,7 @@ public class FireBaseDataLoader {
                 })
                 .addOnFailureListener(callBack::onFailure);
 
+        // --- Patients ---
         db.collection("Patients")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -117,6 +120,7 @@ public class FireBaseDataLoader {
                 })
                 .addOnFailureListener(callBack::onFailure);
 
+        // --- doctors ---
         db.collection("doctors")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -124,7 +128,7 @@ public class FireBaseDataLoader {
                         DoctorSchedule doc = d.toObject(DoctorSchedule.class);
                         if(doc!=null) {
                             doc.setDocId(d.getId());
-//                            cleanExpiredSlotsAndUpdateFirebase(doc);
+                            // REMOVED: cleanExpiredSlotsAndUpdateFirebase(doc);
                             data.doctors.add(doc);
                         }
                     }
@@ -133,40 +137,5 @@ public class FireBaseDataLoader {
                 })
                 .addOnFailureListener(callBack::onFailure);
     }
-
-    private void cleanExpiredSlotsAndUpdateFirebase(DoctorSchedule doctor) {
-        if (doctor.getSchedule() == null) return;
-
-        LocalDate todayDate = LocalDate.now();
-        String today = todayDate.format(DateTimeFormatter.ofPattern("EEEE"));
-        LocalTime now = LocalTime.now();
-
-        boolean updated = false;
-
-        for (DoctorSchedule.Slots slot : doctor.getSchedule()) {
-            if (!slot.isAvailable && slot.getBookedBy() != null) {
-                if (!slot.getDay().equalsIgnoreCase(today) || LocalTime.parse(slot.getEnd()).isBefore(now)) {
-                    slot.isAvailable = true;
-                    slot.bookedBy = null;
-                    updated = true;
-                }
-            }
-        }
-
-        // Update Firebase only if something changed
-        if (updated) {
-            FirebaseFirestore.getInstance()
-                    .collection("doctors")
-                    .document(doctor.getDocId())
-                    .update("schedule", doctor.getSchedule())
-                    .addOnSuccessListener(aVoid -> {
-                        // optional: log success
-                    })
-                    .addOnFailureListener(e -> {
-                        // optional: log failure
-                    });
-        }
-    }
-
 
 }
