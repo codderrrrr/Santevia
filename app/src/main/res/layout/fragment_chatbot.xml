@@ -12,41 +12,53 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fillViewport="true"
+        android:padding="8dp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/etMessage"
+        app:layout_constraintBottom_toTopOf="@id/inputContainer"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent">
 
-        <TextView
-            android:id="@+id/tvResponse"
+        <LinearLayout
+            android:id="@+id/chatContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            android:padding="12dp"/>
+            android:orientation="vertical" />
+
     </ScrollView>
 
-    <EditText
-        android:id="@+id/etMessage"
+    <LinearLayout
+        android:id="@+id/inputContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="12dp"
-        android:textColor="@color/white"
-        android:textSize="16sp"
-        android:imeOptions="actionSend"
-        android:singleLine="true"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@id/btnSend"
-        app:layout_constraintBottom_toBottomOf="parent"/>
-
-    <ImageButton
-        android:id="@+id/btnSend"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:background="@android:color/transparent"
-        android:src="@drawable/send"
-        android:contentDescription="@string/send"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:layout_margin="8dp"
+        android:clipToPadding="false"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginEnd="12dp"/>
+        android:layout_marginBottom="8dp"
+        android:gravity="center_vertical">
+
+        <EditText
+            android:id="@+id/etMessage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Type a message..."
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:imeOptions="actionSend"
+            android:background="@drawable/roundededittext"
+            android:padding="12dp"/>
+
+        <ImageButton
+            android:id="@+id/btnSend"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/send"
+            android:contentDescription="@string/send"/>
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

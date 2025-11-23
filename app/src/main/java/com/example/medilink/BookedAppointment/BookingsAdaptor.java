@@ -146,15 +146,20 @@ public class BookingsAdaptor extends RecyclerView.Adapter<BookingsAdaptor.ViewHo
     }
 
     private void startVideoCall(String docID) {
+
         String patientUID = FirebaseAuth.getInstance().getUid();
         if (patientUID == null) return;
 
         String roomID = docID + "_" + patientUID;
 
-        FirebaseFirestore.getInstance().collection("Calls")
+        FirebaseFirestore.getInstance()
+                .collection("Calls")
                 .document(docID)
+                .collection("incomingCall")
+                .document("call")
                 .set(new HashMap<String, Object>() {{
                     put("from", patientUID);
+                    put("roomID", roomID);
                     put("timestamp", System.currentTimeMillis());
                 }});
 
@@ -163,6 +168,7 @@ public class BookingsAdaptor extends RecyclerView.Adapter<BookingsAdaptor.ViewHo
         intent.putExtra("otherUserID", docID);
         context.startActivity(intent);
     }
+
 
     @Override
     public int getItemCount() {

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
@@ -8,6 +9,7 @@
     android:background="@color/DarkBlue"
     tools:context=".Stats.StatsInput">
 
+    <!-- Header -->
     <TextView
         android:id="@+id/tvHeader"
         android:layout_width="0dp"
@@ -22,96 +24,51 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <TextView
-        android:id="@+id/tvTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:hint="@string/select_stats"
-        android:textColor="@color/white"
-        android:padding="8dp"
-        android:textSize="18sp"
-        android:textColorHint="@color/white"
-        app:layout_constraintTop_toBottomOf="@id/tvHeader"
-        app:layout_constraintStart_toStartOf="parent"/>
-
-    <RadioGroup
-        android:id="@+id/radioGroupTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/tvTime"
-        app:layout_constraintStart_toStartOf="parent"
-        android:orientation="horizontal">
-
-        <RadioButton
-            android:id="@+id/radioManual"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:text="@string/manual_entry"/>
-
-        <RadioButton
-            android:id="@+id/radioDefualt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:text="@string/defualt_entry"/>
-    </RadioGroup>
-
-    <TimePicker
-        android:id="@+id/timePickerManual"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:timePickerMode="spinner"
-        app:layout_constraintTop_toBottomOf="@id/radioGroupTime"
-        android:background="@color/white"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:visibility="gone"
-        android:layout_marginTop="8dp"/>
-
+    <!-- Select Stats Label -->
     <TextView
         android:id="@+id/tvStats"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:hint="@string/select_stats"
+        android:layout_marginTop="16dp"
+        android:text="@string/select_stats"
         android:textColor="@color/white"
         android:padding="8dp"
         android:textSize="18sp"
-        android:textColorHint="@color/white"
-        app:layout_constraintTop_toBottomOf="@id/timePickerManual"
+        app:layout_constraintTop_toBottomOf="@id/tvHeader"
         app:layout_constraintStart_toStartOf="parent"/>
 
+    <!-- Stats RadioGroup -->
     <RadioGroup
         android:id="@+id/radioGroupStats"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         app:layout_constraintTop_toBottomOf="@id/tvStats"
-        app:layout_constraintStart_toStartOf="parent"
-        android:orientation="horizontal">
+        app:layout_constraintStart_toStartOf="parent">
 
         <RadioButton
-            android:id="@+id/radioHeartRate"
+            android:id="@+id/radioWeight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:text="@string/heart_rate"/>
+            android:text="@string/weight_in_kg"
+            android:textColor="@color/white"/>
 
         <RadioButton
-            android:id="@+id/radioPulse"
+            android:id="@+id/radioWater"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:text="@string/pulse"/>
+            android:text="@string/water_intake"
+            android:textColor="@color/white"/>
+
         <RadioButton
-            android:id="@+id/radioBloosPressure"
+            android:id="@+id/radioSleep"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:text="@string/blood_pressure"/>
+            android:text="@string/sleep"
+            android:textColor="@color/white"/>
     </RadioGroup>
 
+    <!-- Value Input -->
     <EditText
         android:id="@+id/etValue"
         android:layout_width="0dp"
@@ -121,23 +78,22 @@
         android:hint="@string/value"
         android:padding="12dp"
         android:textColor="@color/black"
-        android:textSize="16sp"
         android:textColorHint="@color/black"
+        android:textSize="16sp"
         app:layout_constraintTop_toBottomOf="@id/radioGroupStats"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
+    <!-- Enter Button -->
     <Button
         android:id="@+id/btnEnter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/etValue"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_margin="24dp"
+        android:layout_marginTop="24dp"
         android:text="@string/enter"
         android:textColor="@color/white"
         android:backgroundTint="@color/Grey"
-        />
-
+        app:layout_constraintTop_toBottomOf="@id/etValue"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -15,9 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.medilink.ModelClass.Day;
 import com.example.medilink.ModelClass.DoctorSchedule;
-import com.example.medilink.ModelClass.Booking; // Import the new Booking model
+import com.example.medilink.ModelClass.Booking;
 import com.example.medilink.R;
-import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.Timestamp;
@@ -28,13 +27,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 public class WeeklyCalendarAdapter extends RecyclerView.Adapter<WeeklyCalendarAdapter.ViewHolder> {
 
@@ -75,15 +71,12 @@ public class WeeklyCalendarAdapter extends RecyclerView.Adapter<WeeklyCalendarAd
         holder.tvDayName.setText(day.getName());
         holder.tvDayDate.setText(String.valueOf(day.getNo()));
 
-        // Check if the doctor works on this day (simplified check)
         java.time.LocalDate localDate = day.getDate();
         java.util.Date dayDate = java.util.Date.from(
                 localDate.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant()
         );
 
         List<DoctorSchedule.PotentialSlot> potentialSlots = DoctorSchedule.generatePotentialSlotsForDay(dayDate);
-
-        // Show indicator based on potential slots existence (simplified)
         holder.slotIndicator.setBackgroundResource(
                 !potentialSlots.isEmpty() ? R.drawable.slot_available_dot : R.drawable.slot_unavailable_dot);
 
@@ -105,7 +98,6 @@ public class WeeklyCalendarAdapter extends RecyclerView.Adapter<WeeklyCalendarAd
         TextView tvSelectedDay = sheetView.findViewById(R.id.tvSelectedDay);
         RecyclerView rvSlots = sheetView.findViewById(R.id.rvSlots);
 
-        // 1. Generate all potential hardcoded slots for the selected day
         java.time.LocalDate localDate = day.getDate();
         java.util.Date dayDate = java.util.Date.from(
                 localDate.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant()
@@ -120,7 +112,6 @@ public class WeeklyCalendarAdapter extends RecyclerView.Adapter<WeeklyCalendarAd
 
         tvSelectedDay.setText(day.getName() + ", " + day.getNo());
 
-        // 2. Determine the time window for querying bookings
         Calendar calStart = Calendar.getInstance();
 
         calStart.setTime(dayDate);
@@ -130,18 +121,15 @@ public class WeeklyCalendarAdapter extends RecyclerView.Adapter<WeeklyCalendarAd
         Calendar calEnd = (Calendar) calStart.clone();
         calEnd.add(Calendar.DAY_OF_YEAR, 1);
 
-        // 3. Query the 'bookings' subcollection
         db.collection("doctors").document(doctor.getDocId())
                 .collection("bookings")
                 .whereGreaterThanOrEqualTo("appointmentTime", new Timestamp(calStart.getTime()))
                 .whereLessThan("appointmentTime", new Timestamp(calEnd.getTime()))
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    // 4. Mark slots as booked
                     for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
                         Booking booking = doc.toObject(Booking.class);
                         if (booking != null && booking.getAppointmentTime() != null) {
-                            // We use the exact Timestamp (startTime) to check for a match
                             Date bookedTime = booking.getAppointmentTime().toDate();
 
                             for (DoctorSchedule.PotentialSlot slot : potentialSlots) {
@@ -153,7 +141,6 @@ public class WeeklyCalendarAdapter extends RecyclerView.Adapter<WeeklyCalendarAd
                         }
                     }
 
-                    // 5. Setup and show slot adapter with updated availability
                     SlotAdapter slotAdapter = new SlotAdapter(potentialSlots, context, bottomSheet, doctor);
                     rvSlots.setLayoutManager(new LinearLayoutManager(context));
                     rvSlots.setAdapter(slotAdapter);
@@ -166,7 +153,6 @@ public class WeeklyCalendarAdapter extends RecyclerView.Adapter<WeeklyCalendarAd
                 });
     }
 
-    // --- SlotAdapter (Updated for new booking logic) ---
     private static class SlotAdapter extends RecyclerView.Adapter<SlotAdapter.SlotViewHolder> {
         private final List<DoctorSchedule.PotentialSlot> slots;
         private final Context context;
@@ -203,10 +189,8 @@ public class WeeklyCalendarAdapter extends RecyclerView.Adapter<WeeklyCalendarAd
         public void onBindViewHolder(@NonNull SlotViewHolder holder, int position) {
             DoctorSchedule.PotentialSlot slot = slots.get(position);
 
-            // Display using the helper method from DoctorSchedule.PotentialSlot
             holder.tvSlot.setText(slot.getDisplayTime());
 
-            // Color coding based on isBooked flag
             if (slot.isBooked) {
                 holder.tvSlot.setBackgroundResource(R.drawable.slot_unavailable_bg);
                 holder.tvSlot.setTextColor(context.getResources().getColor(android.R.color.darker_gray));
@@ -218,23 +202,19 @@ public class WeeklyCalendarAdapter extends RecyclerView.Adapter<WeeklyCalendarAd
             holder.tvSlot.setOnClickListener(v -> {
                 if (slot.isBooked || userId == null) return;
 
-                // --- NEW BOOKING LOGIC: TRANSACTION ---
                 bookSlotTransaction(slot);
             });
         }
 
         private void bookSlotTransaction(DoctorSchedule.PotentialSlot slot) {
 
-            // 1. Define the target appointment time (Timestamp is key)
             final Timestamp slotTimestamp = new Timestamp(slot.startTime);
             final DocumentReference newBookingRef = db.collection("doctors")
                     .document(doctor.getDocId())
                     .collection("bookings")
-                    .document(); // Auto-ID
+                    .document();
 
-            // 2. Run the transaction
             db.runTransaction(transaction -> {
-                // Check if a booking already exists for this exact time
                 QuerySnapshot conflictSnapshot = null;
                 try {
                     conflictSnapshot = (QuerySnapshot) Tasks.await(db.collection("doctors")
@@ -250,19 +230,17 @@ public class WeeklyCalendarAdapter extends RecyclerView.Adapter<WeeklyCalendarAd
                 }
 
                 if (conflictSnapshot.isEmpty()) {
-                    // Slot is available, create the new booking document
                     Booking newBooking = new Booking(
                             slotTimestamp,
                             userId,
                             doctor.getDocId(),
-                            30, // Hardcoded duration for now
+                            30,
                             Timestamp.now()
                     );
 
                     transaction.set(newBookingRef, newBooking);
                     return "SUCCESS";
                 } else {
-                    // Conflict found (another user booked it just now)
                     throw new FirebaseFirestoreException("Slot already booked.",
                             FirebaseFirestoreException.Code.ABORTED);
                 }
@@ -270,7 +248,6 @@ public class WeeklyCalendarAdapter extends RecyclerView.Adapter<WeeklyCalendarAd
                 if (result.equals("SUCCESS")) {
                     Toast.makeText(context, "Slot booked: " + slot.getDisplayTime(), Toast.LENGTH_LONG).show();
 
-                    // Update UI locally immediately
                     slot.isBooked = true;
                     notifyDataSetChanged();
                     dialog.dismiss();

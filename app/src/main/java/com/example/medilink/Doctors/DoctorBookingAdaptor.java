@@ -26,7 +26,6 @@ import java.util.Locale;
 public class DoctorBookingAdaptor extends RecyclerView.Adapter<DoctorBookingAdaptor.ViewHolder> {
 
     private final Context context;
-    // Changed list type to the new Booking model
     private final List<Booking> bookingList;
 
     public DoctorBookingAdaptor(Context context, List<Booking> bookingList) {
@@ -50,7 +49,6 @@ public class DoctorBookingAdaptor extends RecyclerView.Adapter<DoctorBookingAdap
 
         if (appointmentTimestamp != null) {
             Date date = appointmentTimestamp.toDate();
-            // Format the Timestamp to display the appointment time and date
             @SuppressLint("SimpleDateFormat")
             SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMM | hh:mm a", Locale.getDefault());
 

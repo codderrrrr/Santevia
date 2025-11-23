@@ -108,4 +108,8 @@
     <string name="mode">Mode</string>
     <string name="minimum">Minimum</string>
     <string name="maximum">Maximum</string>
+    <string name="weight">Weight</string>
+    <string name="water_intake">Water Intake</string>
+    <string name="sleep">Sleep</string>
+    <string name="weight_in_kg">Weight (in Kg)</string>
 </resources>

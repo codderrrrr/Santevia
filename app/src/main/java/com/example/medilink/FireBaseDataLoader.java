@@ -1,10 +1,7 @@
 package com.example.medilink;
 
-import com.example.medilink.ModelClass.BloodPressure;
 import com.example.medilink.ModelClass.DoctorSchedule;
-import com.example.medilink.ModelClass.HeartRate;
 import com.example.medilink.ModelClass.Patient;
-import com.example.medilink.ModelClass.Pulse;
 import com.example.medilink.ModelClass.user;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -22,16 +19,13 @@ public class FireBaseDataLoader {
     }
 
     public static class LoadedData{
-        public List<HeartRate> heartRates = new ArrayList<>();
-        public List<Pulse> pulses = new ArrayList<>();
         public List<user> users = new ArrayList<>();
         public List<Patient> patients = new ArrayList<>();
         public List<DoctorSchedule> doctors = new ArrayList<>();
-        public List<BloodPressure> bloodPressures = new ArrayList<>();
     }
 
     public void loadData(final LoadCallBack callBack) {
-        final int TOTAL = 6;
+        final int TOTAL = 3;
         final AtomicInteger completed = new AtomicInteger(0);
         final LoadedData data = new LoadedData();
 
@@ -43,20 +37,6 @@ public class FireBaseDataLoader {
             }
         };
 
-        db.collection("HeartRate")
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    for(DocumentSnapshot d: queryDocumentSnapshots.getDocuments()) {
-                        HeartRate hr = d.toObject(HeartRate.class);
-                        if(hr!=null) {
-                            data.heartRates.add(hr);
-                        }
-                    }
-                    completed.incrementAndGet();
-                    progress.run();
-                })
-                .addOnFailureListener(callBack::onFailure);
-
         db.collection("users")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -65,34 +45,6 @@ public class FireBaseDataLoader {
                         if(u!=null) {
                             u.setUserId(d.getId());
                             data.users.add(u);
-                        }
-                    }
-                    completed.incrementAndGet();
-                    progress.run();
-                })
-                .addOnFailureListener(callBack::onFailure);
-
-        db.collection("BloodPressure")
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    for(DocumentSnapshot d: queryDocumentSnapshots.getDocuments()) {
-                        BloodPressure bp = d.toObject(BloodPressure.class);
-                        if(bp!=null) {
-                            data.bloodPressures.add(bp);
-                        }
-                    }
-                    completed.incrementAndGet();
-                    progress.run();
-                })
-                .addOnFailureListener(callBack::onFailure);
-
-        db.collection("Pulse")
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    for(DocumentSnapshot d: queryDocumentSnapshots.getDocuments()) {
-                        Pulse p = d.toObject(Pulse.class);
-                        if(p!=null) {
-                            data.pulses.add(p);
                         }
                     }
                     completed.incrementAndGet();
@@ -121,7 +73,6 @@ public class FireBaseDataLoader {
                         DoctorSchedule doc = d.toObject(DoctorSchedule.class);
                         if(doc!=null) {
                             doc.setDocId(d.getId());
-                            // REMOVED: cleanExpiredSlotsAndUpdateFirebase(doc);
                             data.doctors.add(doc);
                         }
                     }

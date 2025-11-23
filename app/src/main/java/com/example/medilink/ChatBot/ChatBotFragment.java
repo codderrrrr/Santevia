@@ -1,9 +1,12 @@
 package com.example.medilink.ChatBot;
 
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +15,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,6 +29,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import com.example.medilink.R;
 import okhttp3.Call;
@@ -57,10 +62,8 @@ public class ChatBotFragment extends Fragment {
 
         init(v);
 
-        // Button click
         btnSend.setOnClickListener(view -> sendUserMessage());
 
-        // Enter key press
         etMessage.setOnEditorActionListener((v1, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE ||
                     actionId == EditorInfo.IME_ACTION_SEND ||
@@ -77,7 +80,6 @@ public class ChatBotFragment extends Fragment {
     }
 
     private void init(View view) {
-        tvResponse = view.findViewById(R.id.tvResponse);
         etMessage = view.findViewById(R.id.etMessage);
         btnSend = view.findViewById(R.id.btnSend);
         scrollView = view.findViewById(R.id.scrollView);
@@ -87,7 +89,7 @@ public class ChatBotFragment extends Fragment {
         String userMessage = etMessage.getText().toString().trim();
         if (userMessage.isEmpty()) return;
 
-        appendMessage("You", userMessage);
+        appendMessageCard("You", userMessage);
 
         etMessage.setText("");
         hideKeyboard();
@@ -95,28 +97,33 @@ public class ChatBotFragment extends Fragment {
         sendMessageToBot(userMessage);
     }
 
-    private void appendMessage(String sender, String message) {
-        int start = chatHistory.length();
+    private void appendMessageCard(String sender, String message) {
+        LinearLayout chatContainer = requireView().findViewById(R.id.chatContainer);
 
-        // Add "You: message" or "Bot: message"
-        String line = sender + ": " + message + "\n\n";
-        chatHistory.append(line);
+        TextView tv = new TextView(requireContext());
+        tv.setText(message);
+        tv.setTextSize(16);
+        tv.setPadding(20, 16, 20, 16);
+        tv.setTextColor(sender.equals("You") ? Color.WHITE : Color.BLACK);
 
-        // Set color depending on sender
-        int color = (sender.equals("You"))
-                ? ContextCompat.getColor(getContext(), R.color.white)  // User messages
-                : ContextCompat.getColor(getContext(), R.color.Red); // Bot messages
+        GradientDrawable bg = new GradientDrawable();
+        bg.setCornerRadius(24);
+        bg.setColor(sender.equals("You") ? Color.parseColor("#1E88E5") : Color.parseColor("#E0E0E0"));
+        tv.setBackground(bg);
 
-        chatHistory.setSpan(
-                new ForegroundColorSpan(color),
-                start,
-                chatHistory.length(),
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
         );
+        params.setMargins(8, 8, 8, 8);
+        params.gravity = sender.equals("You") ? Gravity.END : Gravity.START;
 
-        tvResponse.setText(chatHistory);
+        tv.setLayoutParams(params);
+
+        chatContainer.addView(tv);
         scrollView.post(() -> scrollView.fullScroll(View.FOCUS_DOWN));
     }
+
 
 
     private void hideKeyboard() {
@@ -179,7 +186,7 @@ public class ChatBotFragment extends Fragment {
                                 .getJSONObject(0)
                                 .getString("text");
 
-                        requireActivity().runOnUiThread(() -> appendMessage("Bot", botReply));
+                        requireActivity().runOnUiThread(() -> appendMessageCard("Bot", botReply));
 
                     } catch (Exception e) {
                         e.printStackTrace();

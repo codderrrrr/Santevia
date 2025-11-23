@@ -3,7 +3,6 @@ package com.example.medilink.Doctors;
 import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,9 +15,10 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.medilink.BookedAppointment.VideoCall;
-import com.example.medilink.ModelClass.Booking; // Using the new Booking model
+import com.example.medilink.ModelClass.Booking;
 import com.example.medilink.R;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
@@ -31,11 +31,11 @@ public class DoctorBookingFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private DoctorBookingAdaptor adaptor;
-    // Changed list type to the new Booking model
     private final List<Booking> bookingList = new ArrayList<>();
-    private final String doctorId = FirebaseAuth.getInstance().getUid();
+    private String doctorId;
+
     private ListenerRegistration callListenerRegistration;
-    private ListenerRegistration bookingListenerRegistration; // New listener for real-time bookings
+    private ListenerRegistration bookingListenerRegistration;
 
     @Nullable
     @Override
@@ -44,95 +44,98 @@ public class DoctorBookingFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_doctor_booking, container, false);
+
+        doctorId = FirebaseAuth.getInstance().getUid();
+
         recyclerView = view.findViewById(R.id.rvGridAppointments);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
 
-        // Adaptor initialized with the new Booking list
         adaptor = new DoctorBookingAdaptor(getContext(), bookingList);
         recyclerView.setAdapter(adaptor);
 
-        loadDoctorBookings(); // Changed method name and logic
-        listenForIncomingCalls();
+        loadDoctorBookings();
 
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        startCallListener();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (callListenerRegistration != null) callListenerRegistration.remove();
+        if (bookingListenerRegistration != null) bookingListenerRegistration.remove();
     }
 
     private void loadDoctorBookings() {
         if (doctorId == null) return;
 
-        // Use a real-time listener for the doctor's bookings, ordered by appointment time
         bookingListenerRegistration = FirebaseFirestore.getInstance()
                 .collection("doctors")
                 .document(doctorId)
                 .collection("bookings")
                 .orderBy("appointmentTime", Query.Direction.ASCENDING)
                 .addSnapshotListener((snapshots, error) -> {
+
                     if (error != null) {
-                        Log.w("DoctorBookingFragment", "Listen failed for bookings.", error);
                         Toast.makeText(getContext(), "Failed to load bookings.", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
-                    if (snapshots != null && !snapshots.isEmpty()) {
-                        bookingList.clear();
-                        for (com.google.firebase.firestore.DocumentSnapshot doc : snapshots.getDocuments()) {
+                    bookingList.clear();
+
+                    if (snapshots != null) {
+                        for (DocumentSnapshot doc : snapshots) {
                             Booking booking = doc.toObject(Booking.class);
-                            if (booking != null) {
-                                // Optionally set the Booking document ID if needed elsewhere
-                                // booking.setBookingId(doc.getId());
-                                bookingList.add(booking);
-                            }
+                            if (booking != null) bookingList.add(booking);
                         }
-                        adaptor.notifyDataSetChanged();
-                    } else if (snapshots != null && snapshots.isEmpty()) {
-                        bookingList.clear();
-                        adaptor.notifyDataSetChanged();
-                        Toast.makeText(getContext(), "You have no upcoming appointments.", Toast.LENGTH_SHORT).show();
                     }
+
+                    adaptor.notifyDataSetChanged();
                 });
     }
 
-    private void listenForIncomingCalls() {
+    private void startCallListener() {
+
         if (doctorId == null) return;
+
+        if (callListenerRegistration != null) callListenerRegistration.remove();
 
         callListenerRegistration = FirebaseFirestore.getInstance()
                 .collection("Calls")
                 .document(doctorId)
+                .collection("incomingCall")
+                .document("call")
                 .addSnapshotListener((snapshot, error) -> {
+
                     if (error != null || snapshot == null) return;
 
-                    if (snapshot.exists() && snapshot.contains("from")) {
-                        String patientUID = snapshot.getString("from");
-                        if (patientUID != null) {
-                            String roomID = doctorId + "_" + patientUID;
+                    if (!snapshot.exists()) return;
 
-                            snapshot.getReference().delete().addOnCompleteListener(task -> {
-                                if (task.isSuccessful()) {
-                                    PermissionX.init(requireActivity())
-                                            .permissions(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO)
-                                            .request((allGranted, grantedList, deniedList) -> {
-                                                if (allGranted) {
-                                                    // Ensure VideoCall is imported correctly
-                                                    Intent intent = new Intent(getContext(), VideoCall.class);
-                                                    intent.putExtra("roomID", roomID);
-                                                    intent.putExtra("otherUserID", patientUID);
-                                                    startActivity(intent);
-                                                } else {
-                                                    Toast.makeText(getContext(),
-                                                            "Permissions denied. Cannot accept call.", Toast.LENGTH_SHORT).show();
-                                                }
-                                            });
+                    String patientUID = snapshot.getString("from");
+                    String roomID = snapshot.getString("roomID");
+
+                    snapshot.getReference().delete();
+
+                    PermissionX.init(requireActivity())
+                            .permissions(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO)
+                            .request((allGranted, grantedList, deniedList) -> {
+
+                                if (allGranted) {
+                                    Intent intent = new Intent(getContext(), VideoCall.class);
+                                    intent.putExtra("roomID", roomID);
+                                    intent.putExtra("otherUserID", patientUID);
+                                    startActivity(intent);
+                                } else {
+                                    Toast.makeText(getContext(),
+                                            "Permission denied. Cannot accept call.",
+                                            Toast.LENGTH_SHORT).show();
                                 }
                             });
-                        }
-                    }
                 });
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (callListenerRegistration != null) callListenerRegistration.remove();
-        if (bookingListenerRegistration != null) bookingListenerRegistration.remove(); // Remove booking listener
     }
 }

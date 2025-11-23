@@ -1,14 +1,13 @@
 package com.example.medilink.ModelClass;
-
 import com.google.firebase.Timestamp;
 
-public class BloodPressure {
+public class WaterIntake {
     Timestamp timestamp;
     String userId;
     long value;
 
-    BloodPressure() {}
-    BloodPressure(String id, Timestamp timestamp, String userId, long value) {
+    WaterIntake() {}
+    WaterIntake(Timestamp timestamp, String userId, long value) {
         this.timestamp = timestamp;
         this.value = value;
         this.userId = userId;
@@ -28,3 +27,4 @@ public class BloodPressure {
         this.value = value;
     }
 }
+

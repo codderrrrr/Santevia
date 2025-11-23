@@ -1,20 +1,20 @@
 package com.example.medilink.ModelClass;
 import com.google.firebase.Timestamp;
 
-public class HeartRate {
+public class Sleep {
     Timestamp timestamp;
     String userId;
-    long value;
+    long hours;
 
-    HeartRate() {}
-    HeartRate(Timestamp timestamp, String userId, long value) {
+    Sleep() {}
+    Sleep(Timestamp timestamp, String userId, long hours) {
         this.timestamp = timestamp;
-        this.value = value;
+        this.hours = hours;
         this.userId = userId;
     }
 
     public String getUserId() { return userId; }
-    public long getValue() { return value; }
+    public long getHours() { return hours; }
     public Timestamp getTimestamp() { return timestamp; }
 
     public void setTimestamp(Timestamp timestamp) {
@@ -23,8 +23,7 @@ public class HeartRate {
     public void setUserId(String userId) {
         this.userId = userId;
     }
-    public void setValue(long value) {
-        this.value = value;
+    public void setHours(long hours) {
+        this.hours = hours;
     }
 }
-

@@ -1,7 +1,5 @@
 package com.example.medilink.SearchDoc;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,7 +34,6 @@ public class SearchDocFragment extends Fragment {
     ImageButton btnPrevWeek, btnNextWeek;
 
     private LocalDate currentWeekStart;
-    private List<DoctorSchedule> doctorSchedules = new ArrayList<>(); // Initialize to avoid NPE
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -62,8 +59,7 @@ public class SearchDocFragment extends Fragment {
             return;
         }
 
-        // Use the instance variable to store the doctors list
-        doctorSchedules = AppCache.getInstance().getLoadedData().doctors;
+        List<DoctorSchedule> doctorSchedules = AppCache.getInstance().getLoadedData().doctors;
         setUpUi(doctorSchedules);
     }
 
@@ -82,10 +78,7 @@ public class SearchDocFragment extends Fragment {
         rvGridAppointments.setAdapter(adaptor);
     }
 
-    /** WEEKLY CALENDAR METHODS **/
-
     private void initWeeklyCalendar(DoctorSchedule doctor) {
-        // Set currentWeekStart to Monday of the current week
         currentWeekStart = LocalDate.now().with(DayOfWeek.MONDAY);
         updateWeek(doctor);
 
@@ -105,7 +98,6 @@ public class SearchDocFragment extends Fragment {
         DateTimeFormatter dayFormatter = DateTimeFormatter.ofPattern("EEEE");
         for (int i = 0; i < 7; i++) {
             LocalDate date = currentWeekStart.plusDays(i);
-            // The Day object now stores the full LocalDate object
             days.add(new Day(date, date.format(dayFormatter), date.getDayOfMonth()));
         }
 
@@ -117,6 +109,4 @@ public class SearchDocFragment extends Fragment {
         rvWeeklyCalendar.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         rvWeeklyCalendar.setAdapter(adapter);
     }
-
-    // REMOVED THE bookSlotForUser METHOD
 }
