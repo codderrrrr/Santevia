@@ -40,7 +40,7 @@ public class SearchDocFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_search_doc, container, false);
 
         rvGridAppointments = v.findViewById(R.id.rvGridAppointments);
-        rvGridAppointments.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        rvGridAppointments.setLayoutManager(new GridLayoutManager(getContext(), 1));
 
         rvWeeklyCalendar = v.findViewById(R.id.rvWeeklyCalendar);
         mcvAppointment = v.findViewById(R.id.mcvAppointment);
@@ -71,7 +71,6 @@ public class SearchDocFragment extends Fragment {
                     mcvAppointment.setVisibility(View.VISIBLE);
                     String setPrice = "PKR " + doctor.getPrice();
                     tvPrice.setText(setPrice);
-
                     initWeeklyCalendar(doctor);
                 }
         );

@@ -1,6 +1,8 @@
 package com.example.medilink.Home;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,6 +38,7 @@ public class HomeScreen extends AppCompatActivity {
             return insets;
         });
 
+        ImageView ivProfile = findViewById(R.id.ivProfile);
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.flHome, new HomeFragment())
@@ -44,6 +47,10 @@ public class HomeScreen extends AppCompatActivity {
         NotificationHelper.createNotificationChannel(this);
         scheduleDailyStatsReminder();
 
+        ivProfile.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeScreen.this, PatientProfileActivity.class);
+            startActivity(intent);
+        });
         bottomNavigationView.setOnItemSelectedListener(item -> {
             if (item.getItemId() == R.id.nav_home) {
                 replace(new HomeFragment());

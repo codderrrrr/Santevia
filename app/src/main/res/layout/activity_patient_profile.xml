@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/DarkBlue"
     android:padding="24dp"
-    tools:context=".Doctors.DoctorProfileFragment">
+    tools:context=".Home.PatientProfileActivity">
 
     <TextView
-        android:id="@+id/tvDoctorProfile"
+        android:id="@+id/tvPatientProfile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/profile"
@@ -28,7 +29,7 @@
         android:textColor="@color/black"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/tvDoctorProfile"
+        app:layout_constraintTop_toBottomOf="@id/tvPatientProfile"
         android:background="@drawable/roundededittext"
         android:text="@string/name"
         />
@@ -45,51 +46,40 @@
         />
 
     <TextView
-        android:id="@+id/tvEducation"
+        android:id="@+id/tvGender"
         android:layout_marginTop="24dp"
         android:textColor="@color/black"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/roundededittext"
         app:layout_constraintTop_toBottomOf="@+id/tvPhoneNo"
-        android:text="@string/education"
+        android:text="@string/gender"
         />
 
     <TextView
-        android:id="@+id/tvExperience"
+        android:id="@+id/tvAge"
         android:layout_marginTop="24dp"
         android:textColor="@color/black"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/roundededittext"
-        app:layout_constraintTop_toBottomOf="@+id/tvEducation"
-        android:text="@string/experience_in_years"
+        app:layout_constraintTop_toBottomOf="@+id/tvGender"
+        android:text="@string/age"
         />
 
     <TextView
-        android:id="@+id/tvHospital"
+        android:id="@+id/tvAddress"
         android:layout_marginTop="24dp"
         android:textColor="@color/black"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/roundededittext"
-        app:layout_constraintTop_toBottomOf="@id/tvExperience"
-        android:text="@string/hospital_name"
-        />
-
-    <TextView
-        android:id="@+id/tvFees"
-        android:layout_marginTop="24dp"
-        android:textColor="@color/black"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/roundededittext"
-        app:layout_constraintTop_toBottomOf="@id/tvHospital"
-        android:text="@string/fee_per_session"
+        app:layout_constraintTop_toBottomOf="@id/tvAge"
+        android:text="@string/address"
         />
 
     <Button
-        android:id="@+id/btnLogOut"
+        android:id="@+id/btnPatientLogOut"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/log_out"

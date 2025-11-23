@@ -7,7 +7,6 @@
     android:background="@color/DarkBlue"
     tools:context=".Stats.StatisticsFragment">
 
-    <!-- Header -->
     <TextView
         android:id="@+id/tvHeaderStats"
         android:layout_width="0dp"
@@ -57,7 +56,7 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_gravity="center"
-                android:src="@drawable/bloodpressure"/>
+                android:src="@drawable/weight"/>
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
@@ -73,7 +72,7 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_gravity="center"
-                android:src="@drawable/heartrate"/>
+                android:src="@drawable/water"/>
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
@@ -89,12 +88,11 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_gravity="center"
-                android:src="@drawable/pulse"/>
+                android:src="@drawable/sleep"/>
         </com.google.android.material.card.MaterialCardView>
 
     </LinearLayout>
 
-    <!-- Scrollable LineChart -->
     <ScrollView
         android:id="@+id/svChart"
         android:layout_width="match_parent"
@@ -137,7 +135,6 @@
                         android:id="@+id/tvStatName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/blood_pressure"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
@@ -148,7 +145,6 @@
                         android:id="@+id/tvMax"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/_1"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
                         android:layout_marginTop="16dp"
@@ -169,7 +165,6 @@
                         android:id="@+id/tvMin"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/_1"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintRight_toLeftOf="@id/tvMode"
                         android:layout_marginTop="16dp"
@@ -190,7 +185,6 @@
                         android:id="@+id/tvMode"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/_1"
                         app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintLeft_toRightOf="@id/tvMin"
                         android:layout_marginTop="16dp"
@@ -211,7 +205,6 @@
                         android:id="@+id/tvMedian"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/_1"
                         app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintLeft_toLeftOf="parent"
                         android:layout_marginTop="16dp"

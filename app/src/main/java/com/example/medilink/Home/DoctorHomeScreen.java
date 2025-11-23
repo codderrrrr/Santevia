@@ -9,7 +9,6 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 
-import com.example.medilink.BookedAppointment.HomeFragment;
 import com.example.medilink.Doctors.DoctorBookingFragment;
 import com.example.medilink.Doctors.DoctorProfileFragment;
 import com.example.medilink.R;

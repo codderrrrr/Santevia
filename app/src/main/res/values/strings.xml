@@ -112,4 +112,6 @@
     <string name="water_intake">Water Intake</string>
     <string name="sleep">Sleep</string>
     <string name="weight_in_kg">Weight (in Kg)</string>
+    <string name="cardiology">Cardiology</string>
+    <string name="log_out">Log Out</string>
 </resources>

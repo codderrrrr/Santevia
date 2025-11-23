@@ -1,6 +1,8 @@
 package com.example.medilink.SearchDoc;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,8 +33,8 @@ public class AppointmentAdaptor extends RecyclerView.Adapter<AppointmentAdaptor.
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView ivDoctor;
-        TextView tvName, tvSpecialization, tvEducation, tvHospital;
+        ImageView ivDoctor, btnPhoneNo;
+        TextView tvName, tvSpecialization, tvEducation, tvHospital, tvPhoneNo;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -41,6 +43,8 @@ public class AppointmentAdaptor extends RecyclerView.Adapter<AppointmentAdaptor.
             tvSpecialization = itemView.findViewById(R.id.tvSpecialization);
             tvEducation = itemView.findViewById(R.id.tvEducation);
             tvHospital = itemView.findViewById(R.id.tvHospital);
+            tvPhoneNo = itemView.findViewById(R.id.tvPhoneNo);
+            btnPhoneNo = itemView.findViewById(R.id.btnPhoneNo);
         }
     }
 
@@ -55,16 +59,23 @@ public class AppointmentAdaptor extends RecyclerView.Adapter<AppointmentAdaptor.
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         DoctorSchedule doctor = doctorSchedules.get(position);
 
-        holder.ivDoctor.setImageResource(R.drawable.facebook_icon);
+        holder.ivDoctor.setImageResource(R.drawable.profile);
         holder.tvName.setText(doctor.getName());
         holder.tvSpecialization.setText(doctor.getSpecialization());
-        holder.tvEducation.setText(doctor.getEducation());
+        holder.tvEducation.setText(doctor.getEducation().toUpperCase());
         holder.tvHospital.setText(doctor.gethospital());
+        holder.tvPhoneNo.setText("(+92) " + doctor.getPhoneNo());
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onDoctorClick(doctor);
             }
+        });
+
+        holder.btnPhoneNo.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_DIAL);
+            intent.setData(Uri.parse("tel:" + doctor.getPhoneNo()));
+            v.getContext().startActivity(intent);
         });
     }
 

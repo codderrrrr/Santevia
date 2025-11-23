@@ -114,7 +114,7 @@ public class DoctorSignUp extends Fragment {
         doctorMap.put("specialization", doctor.getSpecialization());
         doctorMap.put("education", doctor.getEducation());
         doctorMap.put("price", doctor.getPrice());
-        doctorMap.put("PhoneNo", doctor.getPhone());
+        doctorMap.put("PhoneNo", doctor.getPhoneNo());
         doctorMap.put("experience", doctor.getExperience());
         doctorMap.put("hospital", doctor.gethospital());
 

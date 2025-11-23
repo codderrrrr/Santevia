@@ -20,4 +20,8 @@
     <color name="Online">#2B303C</color>
     <color name="Grey">#424755</color>
     <color name="Red">#D16C6C</color>
+    <color name="white50">#80FFFFFF</color>
+    <color name="white80">#CCFFFFFF</color>
+    <color name="primaryGreen">#28E7A0</color>
+    <color name="purple">#BFD3FF</color>
 </resources>

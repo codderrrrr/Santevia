@@ -127,7 +127,6 @@ public class StatisticsFragment extends Fragment {
                 .document(type)
                 .collection("data");
 
-        // One year ago timestamp
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.YEAR, -1);
         Timestamp oneYearAgo = new Timestamp(cal.getTime());
@@ -143,34 +142,47 @@ public class StatisticsFragment extends Fragment {
                         return;
                     }
 
-                    int index = 0;
+                    // Map of week -> list of values
+                    Map<Integer, List<Float>> weekMap = new HashMap<>();
+                    Calendar tempCal = Calendar.getInstance();
+
                     for (var doc : querySnapshot.getDocuments()) {
+                        Timestamp ts = doc.getTimestamp("timestamp");
+                        if (ts == null) continue;
+                        tempCal.setTime(ts.toDate());
+                        int week = tempCal.get(Calendar.WEEK_OF_YEAR);
+
+                        float value = 0;
                         switch (type) {
                             case "weight":
                                 Weight w = doc.toObject(Weight.class);
-                                if (w != null) {
-                                    float kg = (float) w.getWeight_kg();
-                                    entries.add(new Entry(index++, kg));
-                                    values.add(kg);
-                                }
+                                if (w != null) value = (float) w.getWeight_kg();
                                 break;
                             case "water":
                                 WaterIntake wt = doc.toObject(WaterIntake.class);
-                                if (wt != null) {
-                                    float vv = (float) wt.getValue() / 1000f;
-                                    entries.add(new Entry(index++, vv));
-                                    values.add(vv);
-                                }
+                                if (wt != null) value = (float) wt.getValue() / 1000f; // liters
                                 break;
                             case "sleep":
                                 Sleep sl = doc.toObject(Sleep.class);
-                                if (sl != null) {
-                                    float hr = (float) sl.getHours();
-                                    entries.add(new Entry(index++, hr));
-                                    values.add(hr);
-                                }
+                                if (sl != null) value = (float) sl.getHours();
                                 break;
                         }
+
+                        if (!weekMap.containsKey(week)) weekMap.put(week, new ArrayList<>());
+                        weekMap.get(week).add(value);
+                    }
+
+                    // Aggregate weekly averages
+                    List<Integer> sortedWeeks = new ArrayList<>(weekMap.keySet());
+                    Collections.sort(sortedWeeks);
+
+                    for (int week : sortedWeeks) {
+                        List<Float> weekValues = weekMap.get(week);
+                        float sum = 0;
+                        for (float v : weekValues) sum += v;
+                        float avg = sum / weekValues.size();
+                        entries.add(new Entry(week, avg));
+                        values.add(avg);
                     }
 
                     if (entries.isEmpty()) {
@@ -183,10 +195,9 @@ public class StatisticsFragment extends Fragment {
                     showChart(entries);
                     showStatSummary(type, values);
                 })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(getContext(), "Error loading stats", Toast.LENGTH_SHORT).show();
-                });
+                .addOnFailureListener(e -> Toast.makeText(getContext(), "Error loading stats", Toast.LENGTH_SHORT).show());
     }
+
 
     private void createStatsCollectionIfMissing(String type, CollectionReference ref) {
         Map<String, Object> dummy = new HashMap<>();
@@ -240,9 +251,9 @@ public class StatisticsFragment extends Fragment {
 
         cardStatInfo.setVisibility(View.VISIBLE);
         tvStatName.setText(statName.substring(0,1).toUpperCase() + statName.substring(1));
-        tvMax.setText(max + "");
-        tvMin.setText(min + "");
-        tvMedian.setText("" + median);
-        tvMode.setText("" + mode);
+        tvMax.setText(String.format("%.1f", max));
+        tvMin.setText(String.format("%.1f", min));
+        tvMedian.setText(String.format("%.1f", median));
+        tvMode.setText(String.format("%.1f", mode));
     }
 }

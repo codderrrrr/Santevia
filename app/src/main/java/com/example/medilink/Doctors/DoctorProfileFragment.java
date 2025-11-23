@@ -1,15 +1,18 @@
 package com.example.medilink.Doctors;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
 import com.example.medilink.AppCache;
+import com.example.medilink.Auth.LoginSignUp;
 import com.example.medilink.ModelClass.DoctorSchedule;
 import com.example.medilink.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -19,6 +22,7 @@ import java.util.List;
 
 public class DoctorProfileFragment extends Fragment {
     TextView tvName, tvPhoneNo, tvEducation, tvExperience, tvHospital, tvFees;
+    Button btnLogOut;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -32,6 +36,14 @@ public class DoctorProfileFragment extends Fragment {
             Toast.makeText(getContext(), "No logged-in user found", Toast.LENGTH_SHORT).show();
             return v;
         }
+
+        btnLogOut.setOnClickListener(view -> {
+            FirebaseAuth.getInstance().signOut();
+            Toast.makeText(getContext(), "Logged out successfully", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getContext(), LoginSignUp.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        });
 
         String doctorId = currentUser.getUid();
 
@@ -52,16 +64,13 @@ public class DoctorProfileFragment extends Fragment {
             }
         }
 
-        if (loggedInDoctor != null) {
-            tvName.setText(loggedInDoctor.getName());
-            tvPhoneNo.setText(loggedInDoctor.getPhone());
-            tvEducation.setText(loggedInDoctor.getEducation());
-            tvExperience.setText(loggedInDoctor.getExperience());
-            tvHospital.setText(loggedInDoctor.gethospital());
-            tvFees.setText(String.valueOf(loggedInDoctor.getPrice()));
-        } else {
-            Toast.makeText(getContext(), "Logged-in doctor profile not found", Toast.LENGTH_SHORT).show();
-        }
+        assert loggedInDoctor != null;
+        tvName.setText("Name: " + loggedInDoctor.getName());
+        tvPhoneNo.setText("Phone No: " + loggedInDoctor.getPhoneNo());
+        tvEducation.setText("Education: " + loggedInDoctor.getEducation());
+        tvExperience.setText("Experience: " + loggedInDoctor.getExperience());
+        tvHospital.setText("Hospital: " + loggedInDoctor.gethospital());
+        tvFees.setText("Fee: " + String.valueOf(loggedInDoctor.getPrice()));
 
         return v;
     }
@@ -73,5 +82,6 @@ public class DoctorProfileFragment extends Fragment {
         tvEducation = v.findViewById(R.id.tvEducation);
         tvExperience = v.findViewById(R.id.tvExperience);
         tvHospital = v.findViewById(R.id.tvHospital);
+        btnLogOut = v.findViewById(R.id.btnLogOut);
     }
 }

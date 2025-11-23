@@ -119,11 +119,12 @@ public class DoctorSchedule {
 
     public String getSpecialization() { return specialization; }
     public String getExperience() { return experience; }
-    public String getPhone() { return PhoneNo; }
+    public String getPhoneNo() { return PhoneNo; }
     public String getEducation() { return education; }
     public String getName() { return name; }
     public String gethospital() {return hospital;}
     public int getPrice() { return price;}
     public String getDocId() { return docId; }
+    public void setPhoneNo(String PhoneNo) { this.PhoneNo = PhoneNo;}
     public void setDocId(String docId) { this.docId = docId;}
 }

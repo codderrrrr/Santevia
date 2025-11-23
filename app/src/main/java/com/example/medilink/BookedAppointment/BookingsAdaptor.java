@@ -4,7 +4,9 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -48,8 +50,9 @@ public class BookingsAdaptor extends RecyclerView.Adapter<BookingsAdaptor.ViewHo
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvName, tvSpecialization, tvHospital, tvBookedSlot;
+        TextView tvName, tvSpecialization, tvHospital, tvDay, tvDate, tvMonth;
         ImageView ivCall, ivChat;
+        LinearLayout dateBlock;
         Button btnCancel;
 
         public ViewHolder(@NonNull View itemView) {
@@ -57,10 +60,13 @@ public class BookingsAdaptor extends RecyclerView.Adapter<BookingsAdaptor.ViewHo
             tvName = itemView.findViewById(R.id.tvName);
             tvSpecialization = itemView.findViewById(R.id.tvSpecialization);
             tvHospital = itemView.findViewById(R.id.tvHospital);
-            tvBookedSlot = itemView.findViewById(R.id.tvBookedSlot);
+            tvDay = itemView.findViewById(R.id.tvDay);
+            tvDate = itemView.findViewById(R.id.tvDate);
+            tvMonth = itemView.findViewById(R.id.tvMonth);
             ivCall = itemView.findViewById(R.id.ivCall);
             ivChat = itemView.findViewById(R.id.ivChat);
             btnCancel = itemView.findViewById(R.id.btnCancel);
+            dateBlock = itemView.findViewById(R.id.dateBlock);
         }
     }
 
@@ -83,8 +89,31 @@ public class BookingsAdaptor extends RecyclerView.Adapter<BookingsAdaptor.ViewHo
         holder.tvHospital.setText(doctor.gethospital());
 
         Date date = appointmentTime.toDate();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMM hh:mm a", Locale.getDefault());
-        holder.tvBookedSlot.setText(dateFormat.format(date));
+        SimpleDateFormat startFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+
+        long endTimeMillis = date.getTime() + 30 * 60 * 1000;
+        Date endDate = new Date(endTimeMillis);
+
+        SimpleDateFormat endFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+        holder.dateBlock.setOnClickListener(v -> {
+            String slotString = startFormat.format(date) + " - " + endFormat.format(endDate);
+
+            new androidx.appcompat.app.AlertDialog.Builder(context)
+                    .setTitle("Booked Slot")
+                    .setMessage(slotString)
+                    .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
+                    .show();
+        });
+
+
+        // Format for date block
+        SimpleDateFormat dayFormat = new SimpleDateFormat("EEE", Locale.getDefault());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd", Locale.getDefault());
+        SimpleDateFormat monthFormat = new SimpleDateFormat("MMM", Locale.getDefault());
+
+        holder.tvDay.setText(dayFormat.format(date));
+        holder.tvDate.setText(dateFormat.format(date));
+        holder.tvMonth.setText(monthFormat.format(date));
 
         holder.btnCancel.setOnClickListener(v -> {
             String userId = summary.booking.getBookedByUserId();
