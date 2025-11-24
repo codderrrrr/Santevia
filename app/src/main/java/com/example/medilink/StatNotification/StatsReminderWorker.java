@@ -35,7 +35,6 @@ public class StatsReminderWorker extends Worker {
             return Result.success();
         }
 
-        // Start of today
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MINUTE, 0);

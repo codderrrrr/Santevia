@@ -37,7 +37,7 @@ public class DoctorBookingAdaptor extends RecyclerView.Adapter<DoctorBookingAdap
         this.context = context;
         this.bookingList = bookingList;
 
-        preloadPatients(); // Load all patients once
+        preloadPatients();
     }
 
     private void preloadPatients() {
@@ -69,17 +69,14 @@ public class DoctorBookingAdaptor extends RecyclerView.Adapter<DoctorBookingAdap
         String patientId = booking.getBookedByUserId();
         Timestamp appointmentTimestamp = booking.getAppointmentTime();
 
-        // Set booked slot
         if (appointmentTimestamp != null) {
             Date date = appointmentTimestamp.toDate();
-            // Full slot text
             SimpleDateFormat slotFormat = new SimpleDateFormat("EEEE, dd MMM | hh:mm a", Locale.getDefault());
             holder.tvBookedSlot.setText(slotFormat.format(date));
 
-            // Mini calendar block
-            SimpleDateFormat dayFormat = new SimpleDateFormat("EEE", Locale.getDefault()); // Mon, Tue...
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd", Locale.getDefault()); // 01, 23...
-            SimpleDateFormat monthFormat = new SimpleDateFormat("MMM", Locale.getDefault()); // Jan, Feb...
+            SimpleDateFormat dayFormat = new SimpleDateFormat("EEE", Locale.getDefault());
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd", Locale.getDefault());
+            SimpleDateFormat monthFormat = new SimpleDateFormat("MMM", Locale.getDefault());
 
             holder.tvDay.setText(dayFormat.format(date));
             holder.tvDate.setText(dateFormat.format(date));
@@ -91,7 +88,6 @@ public class DoctorBookingAdaptor extends RecyclerView.Adapter<DoctorBookingAdap
             holder.tvMonth.setText("---");
         }
 
-        // Fetch patient info from preloaded map
         Patient patient = patientMap.get(patientId);
         if (patient != null) {
             holder.tvName.setText(patient.getName());
@@ -105,7 +101,6 @@ public class DoctorBookingAdaptor extends RecyclerView.Adapter<DoctorBookingAdap
             holder.tvPhoneNo.setText("");
         }
 
-        // Chat click
         holder.ivChat.setOnClickListener(v -> {
             String senderID = FirebaseAuth.getInstance().getUid();
             Intent intent = new Intent(context, ChatActivity.class);

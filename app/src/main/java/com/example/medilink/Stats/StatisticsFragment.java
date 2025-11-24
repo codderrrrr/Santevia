@@ -55,7 +55,6 @@ public class StatisticsFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_statistics, container, false);
 
-        // Firebase
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         db = FirebaseFirestore.getInstance();
         if (currentUser == null) {
@@ -63,7 +62,6 @@ public class StatisticsFragment extends Fragment {
             return view;
         }
 
-        // Views
         lineChart = view.findViewById(R.id.lineChartStats);
         cardWeight = view.findViewById(R.id.cardWeight);
         cardWater = view.findViewById(R.id.cardWater);
@@ -81,7 +79,6 @@ public class StatisticsFragment extends Fragment {
 
         loadData("weight");
 
-        // Card Click Listeners
         cardWeight.setOnClickListener(v -> loadData("weight"));
         cardWater.setOnClickListener(v -> loadData("water"));
         cardSleep.setOnClickListener(v -> loadData("sleep"));
@@ -142,7 +139,6 @@ public class StatisticsFragment extends Fragment {
                         return;
                     }
 
-                    // Map of week -> list of values
                     Map<Integer, List<Float>> weekMap = new HashMap<>();
                     Calendar tempCal = Calendar.getInstance();
 
@@ -160,7 +156,7 @@ public class StatisticsFragment extends Fragment {
                                 break;
                             case "water":
                                 WaterIntake wt = doc.toObject(WaterIntake.class);
-                                if (wt != null) value = (float) wt.getValue() / 1000f; // liters
+                                if (wt != null) value = (float) wt.getValue() / 1000f;
                                 break;
                             case "sleep":
                                 Sleep sl = doc.toObject(Sleep.class);
@@ -172,7 +168,6 @@ public class StatisticsFragment extends Fragment {
                         weekMap.get(week).add(value);
                     }
 
-                    // Aggregate weekly averages
                     List<Integer> sortedWeeks = new ArrayList<>(weekMap.keySet());
                     Collections.sort(sortedWeeks);
 
@@ -233,8 +228,7 @@ public class StatisticsFragment extends Fragment {
         float max = Collections.max(values);
         float min = Collections.min(values);
 
-        float median = values.size() % 2 == 1 ?
-                values.get(values.size() / 2) :
+        float median = values.size() % 2 == 1 ? values.get(values.size() / 2) :
                 (values.get(values.size() / 2 - 1) + values.get(values.size() / 2)) / 2f;
 
         Map<Float, Integer> freq = new HashMap<>();

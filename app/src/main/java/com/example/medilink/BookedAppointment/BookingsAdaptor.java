@@ -106,7 +106,6 @@ public class BookingsAdaptor extends RecyclerView.Adapter<BookingsAdaptor.ViewHo
         });
 
 
-        // Format for date block
         SimpleDateFormat dayFormat = new SimpleDateFormat("EEE", Locale.getDefault());
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd", Locale.getDefault());
         SimpleDateFormat monthFormat = new SimpleDateFormat("MMM", Locale.getDefault());

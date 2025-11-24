@@ -14,7 +14,6 @@
         android:layout_height="wrap_content"
         android:padding="16dp">
 
-        <!-- Name -->
         <TextView
             android:id="@+id/tvName"
             android:layout_width="0dp"
@@ -30,7 +29,6 @@
             app:layout_constraintRight_toLeftOf="@id/dateBlock"
             />
 
-        <!-- Booked Slot -->
         <TextView
             android:id="@+id/tvBookedSlot"
             android:layout_width="0dp"
@@ -45,7 +43,6 @@
             app:layout_constraintRight_toLeftOf="@id/dateBlock"
             />
 
-        <!-- Gender -->
         <TextView
             android:id="@+id/tvGender"
             android:layout_width="0dp"
@@ -57,7 +54,6 @@
             app:layout_constraintStart_toStartOf="@id/tvName"
             app:layout_constraintEnd_toEndOf="parent"/>
 
-        <!-- Age -->
         <TextView
             android:id="@+id/tvAge"
             android:layout_width="wrap_content"
@@ -68,7 +64,6 @@
             app:layout_constraintTop_toBottomOf="@id/tvBookedSlot"
             app:layout_constraintEnd_toEndOf="parent"/>
 
-        <!-- Phone No -->
         <TextView
             android:id="@+id/tvPhoneNo"
             android:layout_width="0dp"
@@ -80,7 +75,6 @@
             app:layout_constraintStart_toStartOf="@id/tvName"
             app:layout_constraintEnd_toEndOf="parent"/>
 
-        <!-- Date Block (like previous new design) -->
         <LinearLayout
             android:id="@+id/dateBlock"
             android:orientation="vertical"

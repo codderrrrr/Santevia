@@ -6,14 +6,12 @@
     android:layout_height="match_parent"
     android:background="#000">
 
-    <!-- Remote Video View (full screen) -->
     <FrameLayout
         android:id="@+id/remote_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
-    <!-- Local Video View (small floating preview) -->
     <FrameLayout
         android:id="@+id/local_container"
         android:layout_width="130dp"
@@ -25,7 +23,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Control Buttons -->
     <LinearLayout
         android:id="@+id/bottom_controls"
         android:orientation="horizontal"
@@ -35,7 +32,6 @@
         android:layout_marginBottom="30dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <!-- Mute Button -->
         <ImageButton
             android:id="@+id/btnMute"
             android:layout_width="65dp"
@@ -45,7 +41,6 @@
             android:src="@android:drawable/ic_btn_speak_now"
             app:tint="@color/white"/>
 
-        <!-- Switch Camera -->
         <ImageButton
             android:id="@+id/btnSwitchCamera"
             android:layout_width="65dp"
@@ -56,7 +51,6 @@
             android:src="@android:drawable/ic_menu_camera"
             app:tint="@color/white" />
 
-        <!-- End Call -->
         <ImageButton
             android:id="@+id/btnEndCall"
             android:layout_width="80dp"

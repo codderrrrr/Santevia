@@ -32,7 +32,6 @@
         android:backgroundTint="#1B2735"
         app:tint="#00BFFF"/>
 
-    <!-- Stat Cards -->
     <LinearLayout
         android:id="@+id/llStatsCards"
         android:layout_width="match_parent"

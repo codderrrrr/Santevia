@@ -76,7 +76,7 @@ public class StatsInput extends AppCompatActivity {
         if (radioWeight.isChecked()) {
             type = "weight";
             data.put("weight_kg", value);
-            data.put("weight_lbs", (long) (value * 2.20462)); // optional lbs
+            data.put("weight_lbs", (long) (value * 2.20462));
         } else if (radioWater.isChecked()) {
             type = "water";
             data.put("value", value);
@@ -94,8 +94,7 @@ public class StatsInput extends AppCompatActivity {
                 .document(type)
                 .collection("data");
 
-        ref.add(data)
-                .addOnSuccessListener(docRef -> {
+        ref.add(data).addOnSuccessListener(docRef -> {
                     Toast.makeText(this, "Saved " + type + " data", Toast.LENGTH_SHORT).show();
                     etValue.setText("");
                     finish();

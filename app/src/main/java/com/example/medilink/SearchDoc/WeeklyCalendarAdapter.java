@@ -27,6 +27,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -60,8 +62,7 @@ public class WeeklyCalendarAdapter extends RecyclerView.Adapter<WeeklyCalendarAd
     @NonNull
     @Override
     public WeeklyCalendarAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.day_slot_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.day_slot_item, parent, false);
         return new ViewHolder(view);
     }
 
@@ -71,9 +72,9 @@ public class WeeklyCalendarAdapter extends RecyclerView.Adapter<WeeklyCalendarAd
         holder.tvDayName.setText(day.getName());
         holder.tvDayDate.setText(String.valueOf(day.getNo()));
 
-        java.time.LocalDate localDate = day.getDate();
-        java.util.Date dayDate = java.util.Date.from(
-                localDate.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant()
+        LocalDate localDate = day.getDate();
+        Date dayDate = Date.from(
+                localDate.atStartOfDay(ZoneId.systemDefault()).toInstant()
         );
 
         List<DoctorSchedule.PotentialSlot> potentialSlots = DoctorSchedule.generatePotentialSlotsForDay(dayDate);
@@ -91,15 +92,14 @@ public class WeeklyCalendarAdapter extends RecyclerView.Adapter<WeeklyCalendarAd
     @SuppressLint("SetTextI18n")
     private void showSlotsBottomSheet(Day day) {
         BottomSheetDialog bottomSheet = new BottomSheetDialog(context);
-        @SuppressLint("InflateParams") View sheetView = LayoutInflater.from(context)
-                .inflate(R.layout.slot_bottom_sheet, null);
+        View sheetView = LayoutInflater.from(context).inflate(R.layout.slot_bottom_sheet, null);
         bottomSheet.setContentView(sheetView);
 
         TextView tvSelectedDay = sheetView.findViewById(R.id.tvSelectedDay);
         RecyclerView rvSlots = sheetView.findViewById(R.id.rvSlots);
 
-        java.time.LocalDate localDate = day.getDate();
-        java.util.Date dayDate = java.util.Date.from(
+        LocalDate localDate = day.getDate();
+        Date dayDate = Date.from(
                 localDate.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant()
         );
         final List<DoctorSchedule.PotentialSlot> potentialSlots = DoctorSchedule.generatePotentialSlotsForDay(dayDate);
@@ -237,7 +237,6 @@ public class WeeklyCalendarAdapter extends RecyclerView.Adapter<WeeklyCalendarAd
                             30,
                             Timestamp.now()
                     );
-
                     transaction.set(newBookingRef, newBooking);
                     return "SUCCESS";
                 } else {
@@ -247,7 +246,6 @@ public class WeeklyCalendarAdapter extends RecyclerView.Adapter<WeeklyCalendarAd
             }).addOnSuccessListener(result -> {
                 if (result.equals("SUCCESS")) {
                     Toast.makeText(context, "Slot booked: " + slot.getDisplayTime(), Toast.LENGTH_LONG).show();
-
                     slot.isBooked = true;
                     notifyDataSetChanged();
                     dialog.dismiss();
@@ -258,10 +256,8 @@ public class WeeklyCalendarAdapter extends RecyclerView.Adapter<WeeklyCalendarAd
                 } else {
                     Toast.makeText(context, "Booking failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
-                Log.e("SlotAdapter", "Booking Transaction Failed", e);
             });
         }
-
 
         @Override
         public int getItemCount() {

@@ -9,7 +9,6 @@
     android:background="@color/DarkBlue"
     tools:context=".Stats.StatsInput">
 
-    <!-- Header -->
     <TextView
         android:id="@+id/tvHeader"
         android:layout_width="0dp"
@@ -24,7 +23,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Select Stats Label -->
     <TextView
         android:id="@+id/tvStats"
         android:layout_width="wrap_content"
@@ -37,7 +35,6 @@
         app:layout_constraintTop_toBottomOf="@id/tvHeader"
         app:layout_constraintStart_toStartOf="parent"/>
 
-    <!-- Stats RadioGroup -->
     <RadioGroup
         android:id="@+id/radioGroupStats"
         android:layout_width="wrap_content"
@@ -68,7 +65,6 @@
             android:textColor="@color/white"/>
     </RadioGroup>
 
-    <!-- Value Input -->
     <EditText
         android:id="@+id/etValue"
         android:layout_width="0dp"
@@ -84,7 +80,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Enter Button -->
     <Button
         android:id="@+id/btnEnter"
         android:layout_width="match_parent"

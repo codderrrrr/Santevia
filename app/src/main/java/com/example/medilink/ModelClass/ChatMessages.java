@@ -6,7 +6,7 @@ public class ChatMessages {
     private String text;
     private long timestamp;
 
-    public ChatMessages() {} // Required for Firebase
+    public ChatMessages() {}
 
     public ChatMessages(String senderId, String receiverId, String text, long timestamp) {
         this.senderId = senderId;

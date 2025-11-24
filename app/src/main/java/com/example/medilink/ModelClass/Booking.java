@@ -8,11 +8,8 @@ public class Booking {
     private String doctorId;
     private long durationMinutes;
     private Timestamp bookedAt;
-
-    // Default constructor required for Firestore's .toObject(Booking.class)
     public Booking() {}
 
-    // Custom constructor used when creating a new booking object in the app
     public Booking(Timestamp appointmentTime, String bookedByUserId, String doctorId, long durationMinutes, Timestamp bookedAt) {
         this.appointmentTime = appointmentTime;
         this.bookedByUserId = bookedByUserId;
@@ -20,8 +17,6 @@ public class Booking {
         this.durationMinutes = durationMinutes;
         this.bookedAt = bookedAt;
     }
-
-    // --- Getters (Required by Firestore and for general access) ---
 
     public Timestamp getAppointmentTime() {
         return appointmentTime;
@@ -42,9 +37,6 @@ public class Booking {
     public Timestamp getBookedAt() {
         return bookedAt;
     }
-
-    // --- Setters (Often required by Firestore, though not always explicitly used by the app) ---
-
     public void setAppointmentTime(Timestamp appointmentTime) {
         this.appointmentTime = appointmentTime;
     }

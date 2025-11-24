@@ -21,7 +21,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Selected Appointment Card -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/mcvAppointment"
         android:layout_width="0dp"
@@ -70,7 +69,6 @@
                 app:layout_constraintTop_toBottomOf="@id/tvPerSession"
                 app:layout_constraintStart_toStartOf="parent"/>
 
-            <!-- Week Navigation -->
             <LinearLayout
                 android:id="@+id/calendarHeader"
                 android:layout_width="0dp"
@@ -108,7 +106,6 @@
                     android:src="@drawable/call_icon_down"/>
             </LinearLayout>
 
-            <!-- Weekly Calendar RecyclerView -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvWeeklyCalendar"
                 android:layout_width="0dp"
@@ -123,7 +120,6 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Grid of doctors -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvGridAppointments"
         android:layout_width="0dp"
