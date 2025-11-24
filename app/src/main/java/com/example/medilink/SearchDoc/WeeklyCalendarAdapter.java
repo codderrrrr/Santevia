@@ -49,13 +49,11 @@ public class WeeklyCalendarAdapter extends RecyclerView.Adapter<WeeklyCalendarAd
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvDayName, tvDayDate;
-        View slotIndicator;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvDayName = itemView.findViewById(R.id.tvDayName);
             tvDayDate = itemView.findViewById(R.id.tvDayDate);
-            slotIndicator = itemView.findViewById(R.id.slotIndicator);
         }
     }
 
@@ -78,8 +76,8 @@ public class WeeklyCalendarAdapter extends RecyclerView.Adapter<WeeklyCalendarAd
         );
 
         List<DoctorSchedule.PotentialSlot> potentialSlots = DoctorSchedule.generatePotentialSlotsForDay(dayDate);
-        holder.slotIndicator.setBackgroundResource(
-                !potentialSlots.isEmpty() ? R.drawable.slot_available_dot : R.drawable.slot_unavailable_dot);
+        holder.tvDayDate.setBackgroundResource(
+                !potentialSlots.isEmpty() ? R.drawable.bg_chat_send : R.drawable.slot_unavailable_dot);
 
         holder.itemView.setOnClickListener(v -> showSlotsBottomSheet(day));
     }
@@ -201,7 +199,11 @@ public class WeeklyCalendarAdapter extends RecyclerView.Adapter<WeeklyCalendarAd
 
             holder.tvSlot.setOnClickListener(v -> {
                 if (slot.isBooked || userId == null) return;
-
+                Date now = new Date();
+                if (slot.startTime.before(now)) {
+                    Toast.makeText(context, "Cannot book a slot in the past", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 bookSlotTransaction(slot);
             });
         }

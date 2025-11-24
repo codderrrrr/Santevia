@@ -18,19 +18,14 @@
 
     <TextView
         android:id="@+id/tvDayDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:text="23"
         android:textColor="@color/white"
         android:textSize="18sp"
         android:textStyle="bold"
+        android:background="@drawable/bg_chat_send"
         android:gravity="center"
         android:layout_marginTop="4dp"/>
 
-    <View
-        android:id="@+id/slotIndicator"
-        android:layout_width="8dp"
-        android:layout_height="8dp"
-        android:layout_marginTop="6dp"
-        android:background="@drawable/greendot"/>
 </LinearLayout>
