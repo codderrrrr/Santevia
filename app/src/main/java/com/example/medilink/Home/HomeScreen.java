@@ -21,6 +21,7 @@ import com.example.medilink.StatNotification.NotificationHelper;
 import com.example.medilink.StatNotification.StatsReminderWorker;
 import com.example.medilink.Stats.StatisticsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
@@ -75,7 +76,7 @@ public class HomeScreen extends AppCompatActivity {
     }
 
     private void scheduleDailyStatsReminder() {
-        if (com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser() == null) return;
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) return;
 
         PeriodicWorkRequest statsWork =
                 new PeriodicWorkRequest.Builder(StatsReminderWorker.class, 1, TimeUnit.DAYS)

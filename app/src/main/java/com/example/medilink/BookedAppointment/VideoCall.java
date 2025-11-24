@@ -40,7 +40,7 @@ public class VideoCall extends AppCompatActivity {
 
     private ZegoExpressEngine engine;
     private String localStreamID, remoteStreamID, roomID;
-    private String otherUserID; // doctor or patient id (the remote user)
+    private String otherUserID;
 
     private boolean isMuted = false;
     private boolean usingFrontCamera = true;
@@ -82,7 +82,6 @@ public class VideoCall extends AppCompatActivity {
 
         setupZegoEventHandler();
 
-        // Start preview and publish
         ZegoCanvas localCanvas = new ZegoCanvas(localView);
         localCanvas.viewMode = ZegoViewMode.ASPECT_FILL;
         engine.startPreview(localCanvas);
@@ -144,23 +143,17 @@ public class VideoCall extends AppCompatActivity {
     }
 
     private void endCallAndFinish() {
-        // 1) Update Firestore signaling: mark ended and remove the incomingCall doc (if present)
         if (otherUserID != null) {
-            // otherUserID is the remote user (doctor or patient). If we started the call, the doc is under doctor's doc.
-            // We attempt both: update / delete to be safe.
             FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-            // Try delete the incomingCall doc under doctor -> incomingCall/call
             db.collection("Calls")
                     .document(otherUserID)
                     .collection("incomingCall")
                     .document("call")
                     .delete()
                     .addOnCompleteListener(task -> {
-                        // ignore result; just ensure cleanup
                     });
 
-            // also set a status document under Calls/{otherUserID} to mark ended (optional)
             Map<String, Object> statusMap = new HashMap<>();
             statusMap.put("status", "ended");
             statusMap.put("endedBy", FirebaseAuth.getInstance().getUid());
@@ -170,7 +163,6 @@ public class VideoCall extends AppCompatActivity {
                     .set(statusMap, com.google.firebase.firestore.SetOptions.merge());
         }
 
-        // 2) Stop and cleanup Zego resources robustly
         try {
             if (engine != null) {
                 engine.stopPreview();
@@ -178,7 +170,6 @@ public class VideoCall extends AppCompatActivity {
                 engine.stopPlayingStream(remoteStreamID);
                 engine.logoutRoom(roomID);
 
-                // destroy engine to allow new calls to initialize properly
                 ZegoExpressEngine.destroyEngine(null);
                 engine = null;
             }
@@ -191,14 +182,11 @@ public class VideoCall extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        // We don't auto-destroy here because activity may be backgrounded temporarily,
-        // but if finishing we will destroy in onDestroy/endCall.
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // final cleanup to ensure next call works
         try {
             if (engine != null) {
                 engine.stopPreview();

@@ -12,14 +12,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.work.PeriodicWorkRequest;
-import androidx.work.WorkManager;
 
 import com.example.medilink.OnBoarding.MainActivity;
-import com.example.medilink.StatNotification.StatsReminderWorker;
-
-import java.util.Calendar;
-import java.util.concurrent.TimeUnit;
 
 @SuppressLint("CustomSplashScreen")
 public class SplashActivity extends AppCompatActivity {

@@ -1,5 +1,6 @@
 package com.example.medilink.Home;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
@@ -50,6 +51,7 @@ public class PatientProfileActivity extends AppCompatActivity {
         loadPatientProfile(patientId);
     }
 
+    @SuppressLint("SetTextI18n")
     private void loadPatientProfile(String patientId) {
         FirebaseFirestore.getInstance()
                 .collection("Patients")
@@ -63,18 +65,17 @@ public class PatientProfileActivity extends AppCompatActivity {
                         String age = documentSnapshot.getString("age");
                         String address = documentSnapshot.getString("address");
 
-                        tvName.setText(name != null ? name : "N/A");
-                        tvPhoneNo.setText(phone != null ? phone : "N/A");
-                        tvGender.setText(gender != null ? gender : "N/A");
-                        tvAge.setText(age != null ? age : "N/A");
-                        tvAddress.setText(address != null ? address : "N/A");
+                        tvName.setText("Name: " + name);
+                        tvPhoneNo.setText("Phone No: " + phone);
+                        tvGender.setText("Gender: " + gender);
+                        tvAge.setText("Age: " + age);
+                        tvAddress.setText("Address: " + address);
                     } else {
                         Toast.makeText(this, "Patient data not found", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Failed to load profile", Toast.LENGTH_SHORT).show();
-                    e.printStackTrace();
                 });
     }
 

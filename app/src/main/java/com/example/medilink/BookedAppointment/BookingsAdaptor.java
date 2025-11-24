@@ -198,9 +198,8 @@ public class BookingsAdaptor extends RecyclerView.Adapter<BookingsAdaptor.ViewHo
         context.startActivity(intent);
     }
 
-
     @Override
     public int getItemCount() {
-        return list != null ? list.size() : 0;
+        return list.size();
     }
 }

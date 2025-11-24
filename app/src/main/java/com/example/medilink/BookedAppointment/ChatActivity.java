@@ -29,9 +29,7 @@ public class ChatActivity extends AppCompatActivity {
     private List<ChatMessages> messages = new ArrayList<>();
     private EditText editTextMessage;
     private ImageView buttonSend;
-
     private FirebaseFirestore db;
-
     private String senderID;
     private String receiverID;
 
